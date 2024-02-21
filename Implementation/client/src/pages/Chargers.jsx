@@ -1,3 +1,9 @@
+import Navbar from '../components/Navbar'
+
 export default function Chargers() {
-  return <h1>Chargers</h1>
+    return (
+        <div className="w-full">
+            <Navbar active={'Chargers'} />
+        </div>
+    )
 }

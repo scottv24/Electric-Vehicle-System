@@ -1,14 +1,20 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlugCircleBolt } from '@fortawesome/free-solid-svg-icons'
 
-export default function Logo({ hw }) {
+export default function Logo({ hw, titleStyle }) {
+    const landingPage = 'lg:text-5xl text-4xl'
+    const navbar = 'lg:text-xl text-lg'
     return (
         <div
             id="logoContainer"
             className="align-middle flex align-center justify-center"
         >
             <div id="logo">
-                <h1 className="text-accent font-bold lg:text-5xl text-4xl ">
+                <h1
+                    className={`text-accent font-bold ${
+                        titleStyle === 'landing' ? landingPage : navbar
+                    }`}
+                >
                     Charge Checker
                     <FontAwesomeIcon icon={faPlugCircleBolt} className="ml-4" />
                 </h1>
