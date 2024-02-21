@@ -3,10 +3,12 @@ import Login from './pages/Login'
 import Chargers from './pages/Chargers'
 
 export default function App() {
-  return (
-    <Routes>
-      <Route path='/' element={<Login />} />
-      <Route path='/chargers' element={<Chargers />} />
-    </Routes>
-  )
+    return (
+        <div className="min-h-screen">
+            <Routes>
+                <Route path="/" element={<Login />} />
+                <Route path="/chargers" element={<Chargers />} />
+            </Routes>
+        </div>
+    )
 }

@@ -3,10 +3,12 @@ import Card from '../components/Card'
 import LoginForm from '../components/forms/Login'
 
 export default function Login() {
-  return (
-    <Card className='lg:w-1/3 min-h-[200px] p-8'>
-      <Logo hw={true} />
-      <LoginForm />
-    </Card>
-  )
+    return (
+        <div className="flex justify-center items-center h-screen ">
+            <Card className="min-h-[400px] p-8 grid grid-cols-1 sm:w-auto w-full sm:h-auto h-full content-around">
+                <Logo hw={true} />
+                <LoginForm />
+            </Card>
+        </div>
+    )
 }
