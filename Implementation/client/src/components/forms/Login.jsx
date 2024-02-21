@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function LoginForm() {
     return (
         <div className="flex flex-col items-center gap-3 p-4">
@@ -10,9 +12,9 @@ export default function LoginForm() {
                 placeholder="you@example.com"
             />
 
-            <button className="bg-accent text-white p-2 rounded-lg  text-lg font-bold sm:w-3/4 w-full">
+            <Link to="/Chargers" className="bg-accent text-white p-2 rounded-lg text-center text-lg font-bold sm:w-3/4 w-full">
                 Log In
-            </button>
+            </Link>
         </div>
     )
 }
