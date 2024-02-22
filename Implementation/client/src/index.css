@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --nav-primary: #047508;
+        --nav-selected: #047508;
+        --nav-selected-text: white;
+        --nav-bg: white;
+        --nav-hover: #f2f1f1;
+    }
+
+    .admin-theme {
+        --nav-primary: white;
+        --nav-selected: #f2f1f1;
+        --nav-selected-text: #64748b;
+        --nav-bg: #047508;
+        --nav-hover: #004a03;
+    }
+}
