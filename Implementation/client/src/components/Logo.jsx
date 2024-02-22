@@ -3,7 +3,7 @@ import { faPlugCircleBolt } from '@fortawesome/free-solid-svg-icons'
 
 export default function Logo({ hw, titleStyle }) {
     const landingPage = 'lg:text-5xl text-4xl'
-    const navbar = 'lg:text-xl text-lg'
+    const navbar = 'lg:text-2xl text-xl'
     return (
         <div
             id="logoContainer"
@@ -11,7 +11,7 @@ export default function Logo({ hw, titleStyle }) {
         >
             <div id="logo">
                 <h1
-                    className={`text-accent font-bold ${
+                    className={`text-nav-primary font-bold ${
                         titleStyle === 'landing' ? landingPage : navbar
                     }`}
                 >

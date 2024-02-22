@@ -1,14 +1,21 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 export default function NavbarLink({ field, active }) {
     return (
         <li
-            class={`hover:bg-accent hover:bg-opacity-90 hover:font-bold font-medium w-full rounded-l-full hover:text-white my-8 ${
-                active && 'bg-accent text-white'
+            class={` hover:font-bold font-semibold text-nav-primary w-full rounded-l-full mt-9 ${
+                active
+                    ? 'bg-nav-selected text-nav-selected'
+                    : 'hover:bg-nav-hover'
             }`}
         >
             <a
                 href={field.path}
-                class="py-4 px-6 flex justify-center items-center w-full"
+                class="py-4 px-6 flex justify-start items-center w-full"
             >
+                {field.icon && (
+                    <FontAwesomeIcon icon={field.icon} className="mr-4" />
+                )}
                 {field.name}
             </a>
         </li>
