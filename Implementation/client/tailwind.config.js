@@ -9,6 +9,7 @@ module.exports = {
             white: 'white',
             black: 'black',
             bg: '#F2F1F1',
+            unavailable: '#0101C6',
         },
         extend: {
             textColor: {
