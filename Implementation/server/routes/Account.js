@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 router.get('/get-data', (req, res) => {
-    const chargers = ['list', 'of', 'chargers']
+    const chargers = ['list', 'of', 'accounts']
     res.json({ chargers })
 })
 
