@@ -35,60 +35,63 @@ export default function Admin() {
             <Navbar active={'Chargers'} type="admin" />
             <MainBody>
                 <Spinner enabled={!chargeLocations} />
-                {chargeLocations && (
-                    <Card className="min-h-[400px] sm:w-full w-full sm:h-full sm:h-auto">
-                        <div className="w-full h-1/6 flex justify-stretch">
-                            <button className="w-1/2">Table View</button>
-                            <button className="w-1/2 bg-bg2 text-lg hover:bg-white hover:border-2 hover: border-black">
-                                Map View
-                            </button>
-                        </div>
-                        <div className="p-4 grid grid-cols-4  gap-20">
-                            <h1 className=" col-span-3 row-start-1 text-3xl font-bold flex justify-left items-center">
-                                Charging Locations
-                            </h1>
-                            <div className=" w-full  col-start-4 flex items-center">
-                                <button className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right">
-                                    Edit
-                                    <FontAwesomeIcon
-                                        icon={faPen}
-                                        className="ml-2"
-                                    />
+                {
+                    //TODO: Fix scrolling so only table scrolls
+                    chargeLocations && (
+                        <Card className="min-h-[400px] sm:w-full w-full sm:h-full sm:h-auto overflow-auto">
+                            <div className="w-full h-1/6 flex justify-stretch">
+                                <button className="w-1/2">Table View</button>
+                                <button className="w-1/2 bg-bg2 text-lg hover:bg-white hover:border-2 hover: border-black">
+                                    Map View
                                 </button>
                             </div>
+                            <div className="p-4 grid grid-cols-4  gap-20">
+                                <h1 className=" col-span-3 row-start-1 text-3xl font-bold flex justify-left items-center">
+                                    Charging Locations
+                                </h1>
+                                <div className=" w-full  col-start-4 flex items-center">
+                                    <button className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right">
+                                        Edit
+                                        <FontAwesomeIcon
+                                            icon={faPen}
+                                            className="ml-2"
+                                        />
+                                    </button>
+                                </div>
 
-                            <table className="divide-y divide-solid table-auto col-span-full">
-                                <thead>
-                                    <tr>
-                                        <th className="text-left px-4 py-2">
-                                            Location
-                                        </th>
-                                        <th className="px-4 py-2">
-                                            No. Chargers
-                                        </th>
-                                        <th className="px-4 py-2 md:table-cell hidden">
-                                            Available
-                                        </th>
-                                        <th className="px-4 py-2 md:table-cell hidden">
-                                            In Queue
-                                        </th>
-                                        <th className="px-4 py-2 md:table-cell hidden">
-                                            Broken
-                                        </th>
-                                        <th className="px-4 py-2 md:table-cell hidden">
-                                            Wattage
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-solid">
-                                    {chargeLocations.map((location) => (
-                                        <Locations location={location} />
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </Card>
-                )}
+                                <table className="divide-y divide-solid table-auto col-span-full">
+                                    <thead>
+                                        <tr>
+                                            <th className="text-left px-4 py-2">
+                                                Location
+                                            </th>
+                                            <th className="px-4 py-2">
+                                                No. Chargers
+                                            </th>
+                                            <th className="px-4 py-2 md:table-cell hidden">
+                                                Available
+                                            </th>
+                                            <th className="px-4 py-2 md:table-cell hidden">
+                                                In Queue
+                                            </th>
+                                            <th className="px-4 py-2 md:table-cell hidden">
+                                                Broken
+                                            </th>
+                                            <th className="px-4 py-2 md:table-cell hidden">
+                                                Wattage
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-solid">
+                                        {chargeLocations.map((location) => (
+                                            <Locations location={location} />
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </Card>
+                    )
+                }
             </MainBody>
         </div>
     )
