@@ -4,10 +4,10 @@ import NavbarLink from './NavbarLink'
 
 export default function Navbar({ active, type }) {
     const fields = NavbarInfo[type]
-
+    const theme = `${type}-theme`
     return (
         <div
-            className={`${type}-theme flex flex-col items-center bg-nav-standard shadow h-full w-1/5`}
+            className={`${theme} sm:flex flex-col items-center bg-nav-standard shadow h-full lg:w-1/5 md:w-1/4 w-1/5 hidden`}
         >
             <div className="justify-center flex items-center w-full p-6">
                 <Logo hw={false} />
@@ -19,6 +19,7 @@ export default function Navbar({ active, type }) {
                         <NavbarLink
                             field={field}
                             active={field.name === active}
+                            key={field.name}
                         />
                     ))}
             </ul>

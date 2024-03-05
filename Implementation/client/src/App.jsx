@@ -6,6 +6,7 @@ import QRCodePage from './pages/QRCode'
 import Admin from './pages/Admin'
 import AdminConsole from './pages/AdminConsole'
 import Dashboard from './pages/Dashboard'
+import Navbar from './components/Navbar'
 
 export default function App() {
     return (
@@ -13,9 +14,33 @@ export default function App() {
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/charger1" element={<QRCodePage />} />
-                <Route path="/Admin" element={<Page>   <Admin/></Page>} />
-                <Route path="/AdminConsole" element={<Page>   <AdminConsole/></Page>} />
-                <Route path="/Dashboard" element={<Page>   <Dashboard/></Page>} />
+                <Route
+                    path="/Admin"
+                    element={
+                        <Page>
+                            {' '}
+                            <Admin />
+                        </Page>
+                    }
+                />
+                <Route
+                    path="/AdminConsole"
+                    element={
+                        <Page>
+                            {' '}
+                            <AdminConsole />
+                        </Page>
+                    }
+                />
+                <Route
+                    path="/Dashboard"
+                    element={
+                        <Page>
+                            {' '}
+                            <Dashboard />
+                        </Page>
+                    }
+                />
                 <Route
                     path="/chargers"
                     element={
