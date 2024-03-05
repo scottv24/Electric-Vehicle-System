@@ -1,9 +1,11 @@
-const express = require("express");
-const router = express.Router();
+const express = require('express')
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
+const router = express.Router()
 
-router.get("/", (req, res) => {
-  const chargers = ["list", "of", "chargers"];
-  res.json({ chargers });
-});
+router.get('/get-data', async function (req, res) {
+    const chargers = await prisma.chargingPoint.findMany()
+    res.json({ chargers })
+})
 
-module.exports = router;
+module.exports = router
