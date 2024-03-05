@@ -3,10 +3,10 @@ export const findManyChargeLocations = [
     {
         id: 1,
         name: 'National Robotarium',
-        chargeSpeed: 24.1,
+        wattage: 24.1,
         lat: '55.9124900',
         lng: '-3.3247956',
-        chargePoint: [
+        chargingPoint: [
             { chargingPointID: 1, status: 'FREE' },
             { chargingPointID: 2, status: 'BROKEN' },
             { chargingPointID: 3, status: 'FREE' },
@@ -19,10 +19,10 @@ export const findManyChargeLocations = [
     {
         id: 2,
         name: 'Edwin Chadwick',
-        chargeSpeed: 22,
+        wattage: 22,
         lat: '55.9117038',
         lng: '-3.3255207',
-        chargePoint: [
+        chargingPoint: [
             { chargingPointID: 7, status: 'BUSY' },
             { chargingPointID: 8, status: 'BUSY' },
         ],
@@ -53,10 +53,10 @@ export const findManyChargeLocations = [
     {
         id: 3,
         name: 'GRID',
-        chargeSpeed: 7,
+        wattage: 7,
         lat: '55.9114174',
         lng: '-3.3200196',
-        chargePoint: [
+        chargingPoint: [
             { chargingPointID: 8, status: 'BUSY' },
             { chargingPointID: 9, status: 'FREE' },
         ],
@@ -65,10 +65,10 @@ export const findManyChargeLocations = [
     {
         id: 4,
         name: 'Oriam',
-        chargeSpeed: 24.1,
+        wattage: 24.1,
         lat: '55.9092876',
         lng: '-3.3183487',
-        chargePoint: [
+        chargingPoint: [
             { chargingPointID: 10, status: 'FREE' },
             { chargingPointID: 11, status: 'FREE' },
         ],
@@ -77,10 +77,10 @@ export const findManyChargeLocations = [
     {
         id: 5,
         name: 'Enterprise Building',
-        chargeSpeed: 22,
+        wattage: 22,
         lat: '55.912188',
         lng: '-3.3156351',
-        chargePoint: [
+        chargingPoint: [
             { chargingPointID: 12, status: 'FREE' },
             { chargingPointID: 13, status: 'BUSY' },
         ],
