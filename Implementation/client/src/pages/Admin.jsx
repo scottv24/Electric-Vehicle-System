@@ -26,40 +26,57 @@ export default function Admin() {
             <MainBody>
                 <Spinner enabled={!chargeLocations} />
                 {chargeLocations && (
-                    <Card className="min-h-[400px] p-0 grid grid-cols-4 grid-rows-10 sm:w-full w-full sm:h-full sm:h-auto">
-                        <button class="col-span-2 row-start-1 row-end-2">
-                            Table View
-                        </button>
-                        <button class="col-span-2 bg-bg2 text-lg hover:bg-white hover:border-2 hover: border-black">
-                            Map View
-                        </button>
-                        <h1 class=" col-span-3 row-start-2 text-center text-3xl font-bold">
-                            Charging Locations
-                        </h1>
-                        <button class=" hover: border-black col-start-4 bg-accent py-2 text-white text-bold rounded-l rounded-r align-right">
-                            Edit
-                            <FontAwesomeIcon icon={faPen} className="ml-2" />
-                        </button>
+                    <Card className="min-h-[400px] sm:w-full w-full sm:h-full sm:h-auto">
+                        <div className="w-full h-1/6 flex justify-stretch">
+                            <button className="w-1/2">Table View</button>
+                            <button className="w-1/2 bg-bg2 text-lg hover:bg-white hover:border-2 hover: border-black">
+                                Map View
+                            </button>
+                        </div>
+                        <div className="p-4 grid grid-cols-4  gap-20">
+                            <h1 className=" col-span-3 row-start-1 text-3xl font-bold flex justify-left items-center">
+                                Charging Locations
+                            </h1>
+                            <div className=" w-full  col-start-4 flex items-center">
+                                <button className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right">
+                                    Edit
+                                    <FontAwesomeIcon
+                                        icon={faPen}
+                                        className="ml-2"
+                                    />
+                                </button>
+                            </div>
 
-                        <table class="divide-y divide-solid table-auto col-span-full row-start-4">
-                            <thead>
-                                <tr>
-                                    <th class="text-left px-4 py-2">
-                                        Location
-                                    </th>
-                                    <th class="px-4 py-2">No. Chargers</th>
-                                    <th class="px-4 py-2">Available</th>
-                                    <th class="px-4 py-2">In Queue</th>
-                                    <th class="px-4 py-2">Broken</th>
-                                    <th class="px-4 py-2">Wattage</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-solid">
-                                {chargeLocations.map((location) => (
-                                    <Locations location={location} />
-                                ))}
-                            </tbody>
-                        </table>
+                            <table className="divide-y divide-solid table-auto col-span-full">
+                                <thead>
+                                    <tr>
+                                        <th className="text-left px-4 py-2">
+                                            Location
+                                        </th>
+                                        <th className="px-4 py-2">
+                                            No. Chargers
+                                        </th>
+                                        <th className="px-4 py-2 md:table-cell hidden">
+                                            Available
+                                        </th>
+                                        <th className="px-4 py-2 md:table-cell hidden">
+                                            In Queue
+                                        </th>
+                                        <th className="px-4 py-2 md:table-cell hidden">
+                                            Broken
+                                        </th>
+                                        <th className="px-4 py-2 md:table-cell hidden">
+                                            Wattage
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-solid">
+                                    {chargeLocations.map((location) => (
+                                        <Locations location={location} />
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </Card>
                 )}
             </MainBody>
@@ -76,13 +93,13 @@ function Locations({ location }) {
         (charger) => charger.status === 'BROKEN'
     )
     return (
-        <tr class="divide-y divide-solid bg-bg2">
-            <td>{name}</td>
+        <tr className="divide-solid bg-bg2 p-4">
+            <td className="p-10">{name}</td>
             <td>{numChargers}</td>
-            <td>{available.length}</td>
-            <td>{queue.length}</td>
-            <td>{broken.length}</td>
-            <td>{wattage}kWh</td>
+            <td className="md:table-cell hidden">{available.length}</td>
+            <td className="md:table-cell hidden">{queue.length}</td>
+            <td className="md:table-cell hidden">{broken.length}</td>
+            <td className="md:table-cell hidden">{wattage}kWh</td>
         </tr>
     )
 }
