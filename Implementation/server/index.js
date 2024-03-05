@@ -1,7 +1,19 @@
 const nodemailer = require('nodemailer')
 const express = require('express')
+const cors = require('cors')
 const app = express()
 const PORT = 3000
+
+// const config = require('/config/config.js')
+// const SECRET = 'test'
+// const ngrok_url = '<PUT YOUR NGROK HTTP URL HERE>'
+
+// const cors = require('cors')
+// const bodyParser = require('body-parser')
+// const jwt = require('jsonwebtoken')
+// const nodeMailer = require('nodemailer')
+
+app.use(cors())
 
 const apiRoute = require('./routes/Api')
 const hbs = require('nodemailer-express-handlebars')
@@ -67,5 +79,5 @@ app.get('/test-email', async (req, res) => {
 })
 
 app.listen(PORT, () => {
-    console.log('Express running on port ${PORT}')
+    console.log(`Express running on port ${PORT}`)
 })
