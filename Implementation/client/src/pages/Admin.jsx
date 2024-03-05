@@ -105,11 +105,15 @@ function Locations({ location }) {
     return (
         <tr className="divide-solid bg-bg2 p-4">
             <td className="p-10">{name}</td>
-            <td>{numChargers}</td>
-            <td className="md:table-cell hidden">{available.length}</td>
-            <td className="md:table-cell hidden">{queue.length}</td>
-            <td className="md:table-cell hidden">{broken.length}</td>
-            <td className="md:table-cell hidden">{wattage}kWh</td>
+            <td className="text-center">{numChargers}</td>
+            <td className="md:table-cell hidden text-center">
+                {available.length}
+            </td>
+            <td className="md:table-cell hidden text-center">{queue.length}</td>
+            <td className="md:table-cell hidden text-center">
+                {broken.length}
+            </td>
+            <td className="md:table-cell hidden text-center">{wattage}kWh</td>
         </tr>
     )
 }
