@@ -1,3 +1,4 @@
+const hours = new Date().getHours()
 export const findManyChargeLocations = [
     {
         id: 1,
@@ -13,6 +14,7 @@ export const findManyChargeLocations = [
             { chargingPointID: 5, status: 'BUSY' },
             { chargingPointID: 6, status: 'PENDING' },
         ],
+        queue: [],
     },
     {
         id: 2,
@@ -23,6 +25,29 @@ export const findManyChargeLocations = [
         chargePoint: [
             { chargingPointID: 7, status: 'BUSY' },
             { chargingPointID: 8, status: 'BUSY' },
+        ],
+        queue: [
+            {
+                locationID: 2,
+                userID: 1,
+                queueEntryTime: new Date().setHours(
+                    hours - Math.floor(Math.random() * 9)
+                ),
+            },
+            {
+                locationID: 2,
+                userID: 2,
+                queueEntryTime: new Date().setHours(
+                    hours - Math.floor(Math.random() * 9)
+                ),
+            },
+            {
+                locationID: 2,
+                userID: 3,
+                queueEntryTime: new Date().setHours(
+                    hours - Math.floor(Math.random() * 9)
+                ),
+            },
         ],
     },
     {
@@ -35,6 +60,7 @@ export const findManyChargeLocations = [
             { chargingPointID: 8, status: 'BUSY' },
             { chargingPointID: 9, status: 'FREE' },
         ],
+        queue: [],
     },
     {
         id: 4,
@@ -46,6 +72,7 @@ export const findManyChargeLocations = [
             { chargingPointID: 10, status: 'FREE' },
             { chargingPointID: 11, status: 'FREE' },
         ],
+        queue: [],
     },
     {
         id: 5,
@@ -57,5 +84,6 @@ export const findManyChargeLocations = [
             { chargingPointID: 12, status: 'FREE' },
             { chargingPointID: 13, status: 'BUSY' },
         ],
+        queue: [],
     },
 ]
