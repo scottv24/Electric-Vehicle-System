@@ -3,6 +3,7 @@ import Login from './pages/Login'
 import Chargers from './pages/Chargers'
 import Page from './pages/Page'
 import QRCodePage from './pages/QRCode'
+import Navbar from './components/Navbar'
 
 export default function App() {
     return (
