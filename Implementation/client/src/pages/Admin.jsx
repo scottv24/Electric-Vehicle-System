@@ -6,17 +6,27 @@ import { faPen } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import { findManyChargeLocations } from '../dummyData/BackendData'
 import Spinner from '../components/Spinner'
+import getApiData from '../data/getApiData'
 
 export default function Admin() {
     const [chargeLocations, setChargeLocations] = useState(null)
 
     useEffect(() => {
         //TODO: Replace with API call to get charge locations - could be done on time interval?
-        const chargeLocationDummy = findManyChargeLocations
+        /* const chargeLocationDummy = findManyChargeLocations
 
         setTimeout(function () {
             setChargeLocations(chargeLocationDummy)
-        }, 1000)
+        }, 1000)*/
+
+        async function getChargers() {
+            const { chargers } = await getApiData('chargers')
+            if (chargers) {
+                console.log(chargers)
+                setChargeLocations(chargers)
+            }
+        }
+        getChargers()
     }, [])
 
     console.log('test')
@@ -87,7 +97,7 @@ function Locations({ location }) {
     const { name, chargingPoint, queue, wattage } = location
     const numChargers = chargingPoint.length
     const available = chargingPoint.filter(
-        (charger) => charger.status === 'FREE'
+        (charger) => charger.status === 'IDLE'
     )
     const broken = chargingPoint.filter(
         (charger) => charger.status === 'BROKEN'
