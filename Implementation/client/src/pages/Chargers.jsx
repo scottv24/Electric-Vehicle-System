@@ -4,17 +4,27 @@ import Card from '../components/Card'
 import { useState, useEffect } from 'react'
 import { findManyChargeLocations } from '../dummyData/BackendData'
 import Spinner from '../components/Spinner'
+import getApiData from '../data/getApiData'
 
 export default function Chargers() {
     const [chargeLocations, setChargeLocations] = useState(null)
 
     useEffect(() => {
         //TODO: Replace with API call to get charge locations - could be done on time interval?
-        const chargeLocationDummy = findManyChargeLocations
+        /* const chargeLocationDummy = findManyChargeLocations
 
         setTimeout(function () {
             setChargeLocations(chargeLocationDummy)
-        }, 1000)
+        }, 1000)*/
+
+        async function getChargers() {
+            const { chargers } = await getApiData('chargers')
+            if (chargers) {
+                console.log(chargers)
+                setChargeLocations(chargers)
+            }
+        }
+        getChargers()
     }, [])
 
     return (
@@ -26,9 +36,9 @@ export default function Chargers() {
                 <div className="w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 pt-8">
                     {chargeLocations &&
                         chargeLocations.map((location) => {
-                            const chargers = location.chargePoint
+                            const chargers = location.chargingPoint
                             const available = chargers.filter(
-                                (charger) => charger.status === 'FREE'
+                                (charger) => charger.status === 'IDLE'
                             )
                             return (
                                 <Card
@@ -41,7 +51,7 @@ export default function Chargers() {
                                                 {location.name}
                                             </h2>
 
-                                            <p className="text-gray">{`${location.chargeSpeed}kWh`}</p>
+                                            <p className="text-gray">{`${location.wattage}kWh`}</p>
                                             <p
                                                 className={`lg:hidden block ${
                                                     available.length
