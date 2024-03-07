@@ -13,13 +13,12 @@ router.get('/get-data', async function (req, res) {
     res.json({ accounts })
 })
 
-router.post('/create-user', async function (req, res) {
+router.get('/create-user', async function (req, res) {
     const accountToPost = await prisma.users.create({
         data: {
-            email: 'am454@hw.ac.uk',
+            email: 'newuser@hw.ac.uk',
             permissionLevel: 'USER',
             status: 'IDLE',
-            pendingStartTime: '2024-03-05T00:02:08.000Z',
             chargePointID: null,
         },
     })
