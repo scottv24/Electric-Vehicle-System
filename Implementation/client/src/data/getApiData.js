@@ -13,6 +13,7 @@ export default async function getApiData(route) {
             },
         }
     )
+
     const data = resp.data
     return data
 }

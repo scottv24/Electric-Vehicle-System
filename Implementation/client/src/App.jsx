@@ -7,6 +7,7 @@ import Admin from './pages/Admin'
 import AdminConsole from './pages/AdminConsole'
 import Dashboard from './pages/Dashboard'
 import Navbar from './components/Navbar'
+import Queues from './pages/Queues'
 
 export default function App() {
     return (
@@ -46,6 +47,14 @@ export default function App() {
                     element={
                         <Page>
                             <Chargers />
+                        </Page>
+                    }
+                />
+                <Route
+                    path="/queues"
+                    element={
+                        <Page>
+                            <Queues />
                         </Page>
                     }
                 />

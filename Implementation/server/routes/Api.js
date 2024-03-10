@@ -5,6 +5,7 @@ const router = express.Router()
 const chargerRoutes = require('./Chargers')
 const accountRoutes = require('./Account')
 const adminRoutes = require('./Admin')
+const queueRoutes = require('./Queues')
 
 // Set up standard root response
 router.get('/', (req, res) => {
@@ -15,5 +16,6 @@ router.get('/', (req, res) => {
 router.use('/chargers', chargerRoutes)
 router.use('/account', accountRoutes)
 router.use('/admin', adminRoutes)
+router.use('/queues', queueRoutes)
 
 module.exports = router
