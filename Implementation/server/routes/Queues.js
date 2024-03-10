@@ -27,6 +27,7 @@ router.get('/get-data', async function (req, res) {
             return
         }),
     )
+    queues.sort((queue1, queue2) => queue1.position - queue2.position)
     res.json({ queues })
 })
 

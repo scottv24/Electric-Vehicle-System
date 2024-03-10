@@ -1,13 +1,14 @@
 import Card from '../components/Card'
 import AvailabilityDoughnut from './AvailibilityDoughnut'
+import numericalSuffix from '../data/numericSuffix'
 
 export default function LocationCard({ location, queue }) {
     const chargers = location.chargingPoint || []
     const available = chargers.filter((charger) => charger.status === 'IDLE')
-    console.log(location)
+
     return (
         <Card
-            className="w-full rounded-md h-36 hover:cursor-pointer p-4"
+            className="w-full rounded-md h-36 hover:cursor-pointer lg:p-8 p-4"
             key={location.locationID}
         >
             <div className="flex justify-between h-full">
@@ -28,7 +29,12 @@ export default function LocationCard({ location, queue }) {
                 {!queue ? (
                     <AvailabilityDoughnut location={location} />
                 ) : (
-                    <h2>{location.position}</h2>
+                    <div className="font-bold text-accent text-center flex flex-col justify-center">
+                        <p className="lg:text-xl text-lg">
+                            {numericalSuffix(location.position)}{' '}
+                        </p>
+                        <p className="lg:text-lg text-base">In Queue</p>
+                    </div>
                 )}
             </div>
         </Card>

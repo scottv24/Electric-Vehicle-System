@@ -1,10 +1,10 @@
 import MainBody from '../components/MainBody'
 import Navbar from '../components/Navbar'
 import { useState, useEffect } from 'react'
-import { findManyChargeLocations } from '../dummyData/BackendData'
 import Spinner from '../components/Spinner'
 import getApiData from '../data/getApiData'
 import LocationCard from '../components/ChargerCard'
+import numericalSuffix from '../data/numericSuffix'
 
 export default function Queues() {
     const [queues, setQueues] = useState(null)
@@ -20,6 +20,7 @@ export default function Queues() {
         async function getQueues() {
             const { queues } = await getApiData('queues')
             if (queues) {
+                console.log(queues)
                 setQueues(queues)
             }
         }
@@ -37,7 +38,7 @@ export default function Queues() {
                         <div className="text-accent font-semibold text-center text-lg py-8">
                             <p>Your Closest Position Is</p>
                             <p className="text-2xl font-extrabold">
-                                {queues[0].position}nd
+                                {numericalSuffix(queues[0].position)}
                             </p>
                             <p className="text-black">
                                 At the National Robotarium
