@@ -35,4 +35,14 @@ router.get('/get-data', async function (req, res) {
     res.json({ chargers })
 })
 
+async function getCharger() {
+    const queues = await prisma.$queryRaw`
+    SELECT CAST(COUNT(*)+1 AS CHAR) AS 'position', ChargingPoint.chargingPointID, ChargingPoint.status, ChargingPoint.locationID
+    FROM chargingPoint
+    WHERE queue.locationID IN (${Prisma.join(locations)})
+    ORDER BY position ASC;`
+    return queues
+}
+
+
 module.exports = router

@@ -2,6 +2,7 @@ const express = require('express')
 const prisma = require('../prismaClient')
 const router = express.Router()
 const Prisma = require('@prisma/client')
+
 router.get('/get-data', async function (req, res) {
     const locationsRaw = await prisma.queue.findMany({
         select: { locationID: true, queueEntryTime: true },
@@ -41,6 +42,92 @@ async function getQueues(locations, time) {
     GROUP BY queue.locationID
     ORDER BY position ASC;`
     return queues
+}
+
+async function joinQueues(userID,locationsID, time){
+    const queueEntry = await prisma.queue.create({
+        data:{
+            locationID: locationsID,
+            userID: userID,
+            queueEntryTime: time,
+        },
+    })
+
+    const updateUser = await prisma.user.update({
+        where:{
+
+        },
+        
+        data: {
+
+        },
+    })
+}
+
+async function leaveQueue(user,locations){
+    const deleteUser = await prisma.queue.delete({
+        where: {
+            locationID:{
+                contains:locations
+            },
+            userID:{
+                contains:user
+            },
+        },
+    })
+    const updateUser = await prisma.user.update({
+        where:{
+
+        },
+        data: {
+
+        },
+    })
+}
+
+async function checkIn(user,locations, charger, userStatus, chargerStatus){
+    const checkInUser = await prisma.user.update({
+        where:{
+            id: user
+        },
+        data: {
+            status: "CHARGING",
+            chargePointID: charger,
+        },
+    })
+
+    const checkInLocation = await prisma.chargingPoint.update({
+        where:{
+            locationID: locations,
+        },
+        data:{
+            status:"CHARGING",
+        },
+    })
+
+}
+
+async function checkOut(user,locations, charger, userStatus, chargerStatus){
+
+    const checkOutUser = await prisma.user.update({
+        where:{
+            id: user
+        },
+        data: {
+            status: "IDLE",
+            chargePointID: charger,
+        },
+    })
+
+    const checkOutLocaion = await prisma.chargingPoint.update({
+        where:{
+            locationID: locations,
+        },
+        data:{
+            status:"IDLE",
+        },
+    })
+
 }
 
 module.exports = router
