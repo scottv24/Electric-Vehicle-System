@@ -2,7 +2,13 @@ const nodemailer = require('nodemailer')
 const express = require('express')
 const cors = require('cors')
 const app = express()
-const PORT = 3000
+
+var PORT = process.env.HOST_PORT;
+
+if(PORT == undefined)
+{
+    PORT = 3000
+}
 
 // const config = require('/config/config.js')
 // const SECRET = 'test'
