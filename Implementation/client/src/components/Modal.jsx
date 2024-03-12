@@ -4,7 +4,9 @@ import Button from './Button'
 import Card from './Card'
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
 
-export default function Modal({ location, setOpen }) {
+export default function Modal({ locations, setOpen }) {
+    console.log('here')
+    console.log(locations)
     const handleChildElementClick = (e) => {
         if (e.target.type !== 'submit') {
             e.stopPropagation()
@@ -29,28 +31,37 @@ export default function Modal({ location, setOpen }) {
                     onClick={() => exit()}
                 />
                 <div className="flex flex-col justify-evenly h-full">
-                    <div>
+                    {locations.length === 1 ? (
+                        <div>
+                            <h1 className="text-xl font-bold">
+                                Are you sure you want to leave the queue?
+                            </h1>
+                            <h2 className="mt-4 ">
+                                {locations[0].name}
+                                <span className="text-gray">
+                                    {' '}
+                                    - {locations[0].wattage}kWh
+                                </span>
+                            </h2>
+                            <p className="mt-4 text-accent">
+                                Queue Position:{' '}
+                                {numericalSuffix(locations[0].position)}
+                            </p>
+                        </div>
+                    ) : (
                         <h1 className="text-xl font-bold">
-                            Are you sure you want to leave the queue?
+                            Are you sure you want to leave {locations.length}{' '}
+                            queues?
                         </h1>
-                        <h2 className="mt-4 ">
-                            {location.name}
-                            <span className="text-gray">
-                                {' '}
-                                - {location.wattage}kWh
-                            </span>
-                        </h2>
-                        <p className="mt-4 text-accent">
-                            Queue Position: {numericalSuffix(location.position)}
-                        </p>
-                    </div>
+                    )}
+
                     <div className="flex w-full sm:flex-row flex-col p-2 justify-center">
                         <Button
                             id="button"
-                            color="GREEN"
+                            color="RED"
                             className="sm:w-1/3 w-full m-2"
                         >
-                            Leave Queue
+                            {location ? 'Leave Queue' : 'Leave All'}
                         </Button>
                         <Button
                             id="button"

@@ -28,15 +28,16 @@ router.get('/get-data', async function (req, res) {
         }),
     )
     queues.sort((queue1, queue2) => queue1.position - queue2.position)
+    console.log(queues)
     res.json({ queues })
 })
 
 async function getQueues(locations, time) {
     const queues = await prisma.$queryRaw`
-    SELECT CAST(COUNT(*)+1 AS CHAR) AS 'position', queue.locationID, location.name, location.wattage
+    SELECT CAST(COUNT(*) AS CHAR) AS 'position', queue.locationID, location.name, location.wattage
     FROM queue 
     INNER JOIN location ON queue.locationID = location.locationID
-    WHERE queueEntryTime < ${new Date(time)} AND queue.locationID IN (${Prisma.join(locations)})
+    WHERE queueEntryTime <= ${new Date(time)} AND queue.locationID IN (${Prisma.join(locations)})
     GROUP BY queue.locationID
     ORDER BY position ASC;`
     return queues
