@@ -1,11 +1,9 @@
 const express = require('express')
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const { prisma } = require('../prismaClient')
+const { CheckUser, Login, CreateUser } = require('../services/Login')
 const router = express.Router()
-const jwt = require('jsonwebtoken')
+
 //const { sendLoginLink } = require('./mailer') //Email logic
-const hbs = require('nodemailer-express-handlebars')
-const nodemailer = require('nodemailer')
 
 //Testing purposes only - DELETE FOR RELEASE
 router.get('/get-data', async function (req, res) {
@@ -13,90 +11,18 @@ router.get('/get-data', async function (req, res) {
     res.json({ accounts })
 })
 
-router.get('/create-user', async function (req, res) {
-    const accountToPost = await prisma.users.create({
-        data: {
-            email: 'newuser@hw.ac.uk',
-            permissionLevel: 'USER',
-            status: 'IDLE',
-            chargePointID: null,
-        },
-    })
-})
-
-router.get('/login', async function (req, res) {
-    const user = await prisma.users.findFirst({
-        where: {
-            email: 'am454@hw.ac.uk',
-        },
-    })
-
-    if (user != null) {
-        try {
-            const token = jwt.sign(
-                { userId: user.id },
-                process.env.JWT_SECRET,
-                { expiresIn: '1h' },
-            )
-
-            // create the transport channel for emails to be sent through
-            const emailTransport = nodemailer.createTransport({
-                service: 'gmail',
-                secure: true,
-                // sender information
-                auth: {
-                    user: 'mengdevcharger@gmail.com',
-                    pass: process.env.EMAIL_APP_PASSWORD, // app password goes here
-                },
-            })
-
-            // Configure the email transporter to use the email templates
-            emailTransport.use(
-                'compile',
-                hbs({
-                    viewEngine: {
-                        extname: '.handlebars',
-                        layoutsDir: 'email_templates/',
-                        defaultLayout: false,
-                        partialsDir: 'email_templates',
-                    },
-                    viewPath: 'email_templates',
-                    extName: '.handlebars',
-                }),
-            )
-
-            try {
-                // example email
-                const emailOptions = {
-                    from: 'mengdevcharger@gmail.com',
-                    to: user.email, //test email here
-                    subject: 'loginEmail',
-                    template: 'loginEmail',
-                    context: {
-                        user: user.email,
-                        link: `http://localhost:3000/api/account/verify-user?token=${token}`,
-                    },
-                }
-
-                emailTransport.sendMail(emailOptions, (err, res) => {
-                    if (err) {
-                        console.log(err)
-                    } else {
-                        console.log('Email Sent: ' + res.response)
-                    }
-                })
-            } catch (err) {
-                console.error('Error: ', err)
-                //res.status(500).send('Internal Error')
-            }
-
-            //await sendLoginLink({ email: user, token })
-        } catch (error) {
-            return res.send('Error logging in, please try again')
-        }
+router.post('/login', async function (req, res) {
+    const { body } = req
+    if (!body || !body.email) {
+        res.status(400)
+        res.send()
+        return
     }
-    res.send('Check your email to finish logging in')
-    //res.send(user.email)
+    const exists = await CheckUser(body.email)
+    if (!exists) {
+        await CreateUser(body.email)
+    }
+    await Login(req, res)
 })
 
 router.get('/verify-user', async function (req, res) {

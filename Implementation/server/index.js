@@ -27,7 +27,7 @@ const hbs = require('nodemailer-express-handlebars')
 app.get('/', (req, res) => {
     res.send('EV Charging Backend :)')
 })
-
+app.use(express.json())
 app.use('/api', apiRoute)
 
 // create the transport channel for emails to be sent through
