@@ -8,7 +8,7 @@ datasource db {
 }
 
 model chargingPoint {
-  chargingPointID Int                   @id
+  chargingPointID Int                   @id @default(autoincrement())
   status          chargingPoint_status?
   locationID      Int?
   location        location?             @relation(fields: [locationID], references: [locationID], onDelete: Restrict, onUpdate: Restrict, map: "chargingPoint_ibfk_1")
@@ -27,7 +27,7 @@ model keyValues {
 }
 
 model location {
-  locationID    Int             @id
+  locationID    Int             @id @default(autoincrement())
   name          String?         @db.VarChar(255)
   wattage       Decimal?        @db.Decimal(5, 0)
   lat           Decimal?        @db.Decimal(10, 0)
