@@ -1,9 +1,12 @@
 import MainBody from '../components/MainBody'
 import Navbar from '../components/Navbar'
 import Card from '../components/Card'
+import Spinner from '../components/Spinner'
+import getApiData from '../data/getApiData'
 
 export default function AdminConsole() {
     console.log('test')
+
     return (
         <div className="w-full flex">
             <Navbar active={'Admin Console'} type="admin" />

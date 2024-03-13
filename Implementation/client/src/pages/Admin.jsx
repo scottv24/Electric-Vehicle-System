@@ -2,15 +2,17 @@ import MainBody from '../components/MainBody'
 import Navbar from '../components/Navbar'
 import Card from '../components/Card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPen } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import { findManyChargeLocations } from '../dummyData/BackendData'
 import Spinner from '../components/Spinner'
 import getApiData from '../data/getApiData'
+import AdminTable from '../components/AdminTable'
 
 export default function Admin() {
     const [chargeLocations, setChargeLocations] = useState(null)
-
+    const [selectedLocation, setSelectedLocation] = useState(null)
     useEffect(() => {
         //TODO: Replace with API call to get charge locations - could be done on time interval?
         /* const chargeLocationDummy = findManyChargeLocations
@@ -29,7 +31,6 @@ export default function Admin() {
         getChargers()
     }, [])
 
-    console.log('test')
     return (
         <div className="w-full flex bg-bg">
             <Navbar active={'Chargers'} type="admin" />
@@ -45,78 +46,122 @@ export default function Admin() {
                                     Map View
                                 </button>
                             </div>
-                            <div className="p-4 grid grid-cols-4  gap-20">
-                                <h1 className=" col-span-3 row-start-1 text-3xl font-bold flex justify-left items-center">
-                                    Charging Locations
-                                </h1>
-                                <div className=" w-full  col-start-4 flex items-center">
-                                    <button className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right">
-                                        Edit
-                                        <FontAwesomeIcon
-                                            icon={faPen}
-                                            className="ml-2"
-                                        />
-                                    </button>
+                            <div className="p-4  grid-cols-4 h-full">
+                                <div className="flex">
+                                    <h1 className="w-full col-span-3 mt-0 text-3xl font-bold flex justify-left items-center">
+                                        Charging Locations
+                                    </h1>
+                                    <div className=" w-full flex items-center">
+                                        {selectedLocation ? (
+                                            <button
+                                                className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right"
+                                                onClick={() => {
+                                                    setSelectedLocation(null)
+                                                }}
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={faArrowLeft}
+                                                />{' '}
+                                                Back
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right"
+                                                onClick={() => {
+                                                    setSelectedLocation(null)
+                                                }}
+                                            >
+                                                Add{' '}
+                                                <FontAwesomeIcon
+                                                    icon={faPlus}
+                                                />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
-                                <table className="divide-y divide-solid table-auto col-span-full">
-                                    <thead>
-                                        <tr>
-                                            <th className="text-left px-4 py-2">
-                                                Location
-                                            </th>
-                                            <th className="px-4 py-2">
-                                                No. Chargers
-                                            </th>
-                                            <th className="px-4 py-2 md:table-cell hidden">
-                                                Available
-                                            </th>
-                                            <th className="px-4 py-2 md:table-cell hidden">
-                                                In Queue
-                                            </th>
-                                            <th className="px-4 py-2 md:table-cell hidden">
-                                                Broken
-                                            </th>
-                                            <th className="px-4 py-2 md:table-cell hidden">
-                                                Wattage
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-solid">
-                                        {chargeLocations.map((location) => (
-                                            <Locations location={location} />
-                                        ))}
-                                    </tbody>
-                                </table>
+                                {!selectedLocation ? (
+                                    <AdminTable
+                                        chargeLocations={chargeLocations}
+                                        setSelectedLocation={
+                                            setSelectedLocation
+                                        }
+                                        selectedLocation={selectedLocation}
+                                    ></AdminTable>
+                                ) : (
+                                    <div className="col-span-full xl:px-[10%] text-xl p-3 flex flex-col justify-between h-full">
+                                        <div>
+                                            <input
+                                                value={selectedLocation.name}
+                                                onChange={(value) => {
+                                                    selectedLocation.name =
+                                                        value
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="w-3/4 flex justify-between">
+                                            <label>Wattage</label>
+                                            <div className="w-2/5 border-solid border-2 border-gray rounded-lg">
+                                                <input
+                                                    className="w-1/2 bg-opacity-0"
+                                                    type="number"
+                                                    min="0"
+                                                    max="99"
+                                                />
+                                                <span className="w-1/2">
+                                                    kWh
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="w-3/4 flex justify-between">
+                                            <label>LAT</label>
+                                            <input
+                                                className="w-2/5 border-solid border-2 border-gray rounded-lg px-1"
+                                                type="number"
+                                                min="0"
+                                                max="100"
+                                            />
+                                            <label>LNG</label>
+                                            <input
+                                                className="w-2/5 border-solid border-2 border-gray rounded-lg px-1"
+                                                type="number"
+                                                min="0"
+                                                max="100"
+                                            />
+                                        </div>
+                                        {selectedLocation.chargingPoint.map(
+                                            (charger, i) => (
+                                                <div className="w-3/4 flex justify-between col-span-full">
+                                                    <label
+                                                        for={`chargerStates${i}`}
+                                                    >{`Charger ${
+                                                        i + 1
+                                                    }`}</label>
+                                                    <select
+                                                        value={charger.status}
+                                                        className="w-2/5 border-solid border-2 border-gray rounded-lg"
+                                                        name={`chargerStates${i}`}
+                                                    >
+                                                        <option value="IDLE">
+                                                            Available
+                                                        </option>
+                                                        <option value="CHARGING">
+                                                            In Use
+                                                        </option>
+                                                        <option value="BROKEN">
+                                                            Broken
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </Card>
                     )
                 }
             </MainBody>
         </div>
-    )
-}
-function Locations({ location }) {
-    const { name, chargingPoint, queue, wattage } = location
-    const numChargers = chargingPoint.length
-    const available = chargingPoint.filter(
-        (charger) => charger.status === 'IDLE'
-    )
-    const broken = chargingPoint.filter(
-        (charger) => charger.status === 'BROKEN'
-    )
-    return (
-        <tr className="divide-solid bg-bg2 p-4">
-            <td className="p-10">{name}</td>
-            <td className="text-center">{numChargers}</td>
-            <td className="md:table-cell hidden text-center">
-                {available.length}
-            </td>
-            <td className="md:table-cell hidden text-center">{queue.length}</td>
-            <td className="md:table-cell hidden text-center">
-                {broken.length}
-            </td>
-            <td className="md:table-cell hidden text-center">{wattage}kWh</td>
-        </tr>
     )
 }

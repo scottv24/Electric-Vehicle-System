@@ -8,9 +8,17 @@ import {
 
 export const NavbarInfo = {
     admin: [
-        { name: 'Chargers', path: '/Admin', icon: faChargingStation },
-        { name: 'Dashboard', path: '/dashboard', icon: faChartLine },
-        { name: 'Admin Console', path: '/adminConsole', icon: faUserGear },
+        {
+            name: 'Chargers',
+            path: 'Admin',
+            icon: faChargingStation,
+        },
+        { name: 'Dashboard', path: 'dashboard', icon: faChartLine },
+        {
+            name: 'Admin Console',
+            path: 'adminConsole',
+            icon: faUserGear,
+        },
     ],
     client: [
         {
