@@ -3,8 +3,9 @@ import numericalSuffix from '../data/numericSuffix'
 import Button from './Button'
 import Card from './Card'
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
+import leaveQueue from '../data/leaveQueues'
 
-export default function Modal({ locations, setOpen }) {
+export default function Modal({ locations, setOpen, refresh }) {
     console.log('here')
     console.log(locations)
     const handleChildElementClick = (e) => {
@@ -60,8 +61,17 @@ export default function Modal({ locations, setOpen }) {
                             id="button"
                             color="RED"
                             className="sm:w-1/3 w-full m-2"
+                            onClick={async () => {
+                                await leaveQueue(
+                                    locations.map(
+                                        (location) => location.locationID
+                                    )
+                                )
+                                refresh()
+                                exit()
+                            }}
                         >
-                            {location ? 'Leave Queue' : 'Leave All'}
+                            {location ? 'Leave Queue' : 'Leave Queues'}
                         </Button>
                         <Button
                             id="button"

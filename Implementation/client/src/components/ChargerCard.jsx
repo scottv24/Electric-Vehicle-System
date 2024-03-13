@@ -14,6 +14,7 @@ export default function LocationCard({
     leavingSelector,
     selected,
     setSelected,
+    setLeaving,
 }) {
     const chargers = location.chargingPoint || []
     const available = chargers.filter((charger) => charger.status === 'IDLE')
@@ -87,6 +88,10 @@ export default function LocationCard({
                 location={location}
                 editing={editing && !leavingSelector}
                 setEditing={setEditing}
+                leave={() => {
+                    setSelected(true)
+                    setLeaving()
+                }}
             />
         </div>
     )

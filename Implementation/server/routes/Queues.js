@@ -44,90 +44,86 @@ async function getQueues(locations, time) {
     return queues
 }
 
-async function joinQueues(userID,locationsID, time){
+router.post('/leave-queue', async function (req, res) {
+    leaveQueue(req, res)
+})
+
+async function joinQueues(userID, locationsID) {
     const queueEntry = await prisma.queue.create({
-        data:{
-            locationID: locationsID,
-            userID: userID,
-            queueEntryTime: time,
+        data: {
+            locationID,
+            userID,
         },
     })
 
     const updateUser = await prisma.user.update({
-        where:{
+        where: {},
 
-        },
-        
-        data: {
-
-        },
+        data: {},
     })
 }
 
-async function leaveQueue(user,locations){
-    const deleteUser = await prisma.queue.delete({
+async function leaveQueue(req, res) {
+    const { body } = req
+    const { locations, userID } = body
+    const locationsList = JSON.parse(locations)
+    console.log(locationsList)
+    console.log(userID)
+    if (!locations || !userID) {
+        res.status(400).send()
+    }
+
+    await prisma.queue.deleteMany({
         where: {
-            locationID:{
-                contains:locations
+            locationID: {
+                in: locationsList,
             },
-            userID:{
-                contains:user
-            },
+            userID,
         },
     })
-    const updateUser = await prisma.user.update({
-        where:{
-
-        },
-        data: {
-
-        },
-    })
+    return res.send('Complete')
 }
 
-async function checkIn(user,locations, charger, userStatus, chargerStatus){
+async function checkIn(user, locations, charger, userStatus, chargerStatus) {
     const checkInUser = await prisma.user.update({
-        where:{
-            id: user
+        where: {
+            id: user,
         },
         data: {
-            status: "CHARGING",
+            status: 'CHARGING',
             chargePointID: charger,
         },
     })
 
     const checkInLocation = await prisma.chargingPoint.update({
-        where:{
+        where: {
             locationID: locations,
         },
-        data:{
-            status:"CHARGING",
+        data: {
+            status: 'CHARGING',
         },
     })
-
 }
 
-async function checkOut(user,locations, charger, userStatus, chargerStatus){
-
+async function checkOut(user, locations, charger, userStatus, chargerStatus) {
     const checkOutUser = await prisma.user.update({
-        where:{
-            id: user
+        where: {
+            id: user,
         },
         data: {
-            status: "IDLE",
+            status: 'IDLE',
             chargePointID: charger,
         },
     })
 
     const checkOutLocaion = await prisma.chargingPoint.update({
-        where:{
+        where: {
             locationID: locations,
         },
-        data:{
-            status:"IDLE",
+        data: {
+            status: 'IDLE',
         },
     })
-
 }
 
 module.exports = router
