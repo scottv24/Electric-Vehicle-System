@@ -1,8 +1,8 @@
 const express = require('express')
-const { prisma } = require('../prismaClient')
+const prisma = require('../prismaClient')
 const { CheckUser, Login, CreateUser } = require('../services/Login')
 const router = express.Router()
-
+const jwt = require('jsonwebtoken')
 //const { sendLoginLink } = require('./mailer') //Email logic
 
 //Testing purposes only - DELETE FOR RELEASE
@@ -28,9 +28,9 @@ router.post('/login', async function (req, res) {
 router.get('/verify-user', async function (req, res) {
     const token = req.query.token
     if (token == null) return res.sendStatus(401)
-
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
+
         const user = await prisma.users.findFirst({
             where: {
                 id: decodedToken.userId,
