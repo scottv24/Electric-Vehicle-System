@@ -32,7 +32,29 @@ router.get('/get-data', async function (req, res) {
     const chargers = await prisma.location.findMany({
         include: { chargingPoint: true, queue: true },
     })
+    chargers.forEach((charger) => {
+        charger.availability = getAvailability(charger.chargingPoint)
+        charger.queue = charger.queue.length
+    })
+    console.log(chargers)
     res.json({ chargers })
+})
+
+router.get('/location/:locationID/get-data', async function (req, res) {
+    const { params } = req
+    if (params) {
+        const { locationID } = params
+        if (locationID) {
+            const location = await prisma.location.findFirst({
+                where: { locationID: +locationID },
+                include: { chargingPoint: true, queue: true },
+            })
+            location.queue = location.queue.length
+            location.availability = getAvailability(location.chargingPoint)
+            return res.json({ location })
+        }
+    }
+    res.status(400).send()
 })
 
 async function getCharger() {
@@ -44,5 +66,22 @@ async function getCharger() {
     return queues
 }
 
+function getAvailability(chargingPoints) {
+    const available = chargingPoints.filter(
+        (charger) => charger.status === 'IDLE',
+    ).length
+    const broken = chargingPoints.filter(
+        (charger) => charger.status === 'BROKEN',
+    ).length
+    const charging = chargingPoints.filter(
+        (charger) => charger.status === 'CHARGING',
+    ).length
+    const reserved = chargingPoints.filter(
+        (charger) => charger.status === 'BROKEN',
+    ).length
+    const numChargers = chargingPoints.length
+    const availability = { numChargers, available, broken, charging, reserved }
+    return availability
+}
 
 module.exports = router

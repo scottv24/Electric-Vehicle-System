@@ -8,7 +8,7 @@ import numericalSuffix from '../data/numericSuffix'
 import Button from '../components/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
-import Modal from '../components/Modal'
+import LeaveQueueModal from '../components/LeaveQueueModal'
 
 export default function Queues() {
     const [queues, setQueues] = useState(null)
@@ -157,7 +157,7 @@ export default function Queues() {
                     </div>
                 )}
                 {leaving && (
-                    <Modal
+                    <LeaveQueueModal
                         setOpen={(open) => {
                             setLeaving(open)
                             if (!open) {

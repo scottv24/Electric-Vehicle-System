@@ -1,7 +1,5 @@
-import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
-import Modal from './Modal'
 
 export default function SwipeClose({ editing, leave }) {
     return (
