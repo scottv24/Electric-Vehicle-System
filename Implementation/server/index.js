@@ -18,7 +18,7 @@ if(PORT == undefined)
 // const bodyParser = require('body-parser')
 // const jwt = require('jsonwebtoken')
 // const nodeMailer = require('nodemailer')
-
+app.use(express.json())
 app.use(cors())
 
 const apiRoute = require('./routes/Api')

@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useParams } from 'react-router-dom'
 import Login from './pages/Login'
 import Chargers from './pages/Chargers'
 import Page from './pages/Page'
@@ -7,6 +7,9 @@ import Admin from './pages/Admin'
 import AdminConsole from './pages/AdminConsole'
 import Dashboard from './pages/Dashboard'
 import Navbar from './components/Navbar'
+import Queues from './pages/Queues'
+import LocationInfo from './components/LocationInfo'
+import ChargerModal from './components/ChargerModal'
 
 export default function App() {
     return (
@@ -49,6 +52,15 @@ export default function App() {
                         </Page>
                     }
                 />
+                <Route
+                    path="/queues"
+                    element={
+                        <Page>
+                            <Queues />
+                        </Page>
+                    }
+                />
+                <Route path="/charger/:id" element={<ChargerModal />} />
             </Routes>
         </div>
     )
