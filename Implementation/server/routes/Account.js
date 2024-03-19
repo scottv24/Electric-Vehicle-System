@@ -35,8 +35,10 @@ router.get('/verify-user', async function (req, res) {
             where: {
                 id: decodedToken.userId,
             },
-        })
-        res.send('Authenticated, welcome')
+        }) //remove localhost for deployment
+        const url =
+            'https://769e-2a02-c7c-c850-8e00-5044-ea83-495d-774.ngrok-free.app'
+        res.redirect(url)
     } catch (error) {
         res.sendStatus(401)
     }
