@@ -9,18 +9,12 @@ import { findManyChargeLocations } from '../dummyData/BackendData'
 import Spinner from '../components/Spinner'
 import getApiData from '../data/getApiData'
 import AdminTable from '../components/AdminTable'
+import { Axios } from 'axios'
 
 export default function Admin() {
     const [chargeLocations, setChargeLocations] = useState(null)
     const [selectedLocation, setSelectedLocation] = useState(null)
     useEffect(() => {
-        //TODO: Replace with API call to get charge locations - could be done on time interval?
-        /* const chargeLocationDummy = findManyChargeLocations
-
-        setTimeout(function () {
-            setChargeLocations(chargeLocationDummy)
-        }, 1000)*/
-
         async function getChargers() {
             const { chargers } = await getApiData('chargers')
             if (chargers) {
@@ -129,6 +123,7 @@ export default function Admin() {
                                                 max="100"
                                             />
                                         </div>
+
                                         {selectedLocation.chargingPoint.map(
                                             (charger, i) => (
                                                 <div className="w-3/4 flex justify-between col-span-full">
