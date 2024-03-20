@@ -87,9 +87,9 @@ export default function AdminConsole() {
 async function RemoveAdmin(email) {
     console.log('Entered RemoveAdmin')
     console.log(email)
-    const user = 'USER'
-    const body = { email, user }
-    const response = await Axios.post(
+    const permissionLevel = 'USER'
+    const body = { email, permissionLevel }
+    const response = await Axios.patch(
         'http://localhost:3000/api/admin/set-permission-level',
         body,
         {}

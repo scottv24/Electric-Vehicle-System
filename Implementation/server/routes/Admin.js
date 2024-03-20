@@ -31,21 +31,20 @@ const router = express.Router()
 router.patch('/set-permission-level', async function (req, res) {
     console.log('sssssssssssssssssssssssssss')
     try {
-        userID = req.query.userID
-        permLevel = req.query.permissionLevel
-
-        if (userID && permLevel && !isNaN(userID)) {
-            userID = parseInt(userID)
-
+        console.log(req.body)
+        email = req.body.email
+        permLevel = req.body.permissionLevel
+        if (email && permLevel) {
             //Check user exists
             try {
                 await prisma.users.findUniqueOrThrow({
                     where: {
-                        id: userID,
+                        email: email,
                     },
                 })
             } catch (err) {
                 if (err.name == 'NotFoundError') {
+                    console.log(err)
                     res.sendStatus(404)
 
                     return
@@ -56,7 +55,7 @@ router.patch('/set-permission-level', async function (req, res) {
 
             await prisma.users.update({
                 where: {
-                    id: userID,
+                    email: email,
                 },
                 data: {
                     permissionLevel: permLevel,
