@@ -6,6 +6,7 @@
             font-size: 20px;
             line-height: 24px;
             font-family: 'Calibri';
+            padding: 2%
         }
         .container {
             text-align: center;
@@ -42,7 +43,9 @@
                 <td>
                     <!-- Email Contents -->
                     <h1 class="text"> {{title}} </h1>
-                    <p class="text"> Apologies if you are seeing this message it means an error has resulted. You may disregard this email.</p>              
+                    <p class="text"> Hello {{user}}, You are currently next in queue at {{zone}} </p>
+                    <p class="text"> This space may still be occupied but the current space-holder has been notified that their vehicle is finished charging! </p>
+                    <p class="text"> You may recieve another email when that user has vacated. </p> 
                 </td>
             </tr>
         </tbody>

@@ -6,6 +6,7 @@
             font-size: 20px;
             line-height: 24px;
             font-family: 'Calibri';
+            padding: 2%;
         }
         .container {
             text-align: center;
@@ -30,7 +31,7 @@
     
 
     <!-- Start single column section -->
-    <table class="container" style="background-color: #fff;" align="center">
+    <table id="main-container" class="container" style="background-color: #fff;" align="center">
         <tbody>
             <tr>
                 <td>
@@ -42,7 +43,10 @@
                 <td>
                     <!-- Email Contents -->
                     <h1 class="text"> {{title}} </h1>
-                    <p class="text"> Apologies if you are seeing this message it means an error has resulted. You may disregard this email.</p>              
+                    <p class="text"> Hello {{user}}, Your vehicle currently parked at {{zone}} has finished charger! </p>
+                    <p class="text"> In order to give everyone a chance to charge please consider moving your vehicle when safe to do so. </p>
+                    <p class="text"> There are currently {{queueSize}} people waiting for an opportunity to charge at this location. </p>
+                    </p>              
                 </td>
             </tr>
         </tbody>
