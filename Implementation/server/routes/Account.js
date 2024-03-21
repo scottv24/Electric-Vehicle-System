@@ -2,7 +2,7 @@ const express = require('express')
 const prisma = require('../prismaClient')
 
 const router = express.Router()
-const jwt = require('jsonwebtoken')
+
 //const { sendLoginLink } = require('./mailer') //Email logic
 
 //Testing purposes only - DELETE FOR RELEASE

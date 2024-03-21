@@ -52,7 +52,6 @@ async function Login(req, res) {
                     extName: '.handlebars',
                 }),
             )
-
             try {
                 // example email
                 const emailOptions = {
