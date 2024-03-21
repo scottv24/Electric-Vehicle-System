@@ -123,6 +123,21 @@ let signInContext = (recipient, zone) => {
         zone: zone
     }
 }
+let LoginContext = (recipient, zone, link) => {
+    return {
+        title: "Attention Required!",
+        user: recipient,
+        zone: zone,
+        link: link
+    }
+}
+let spaceAvailableContext = (recipient, zone) => {
+    return {
+        title: "A Space is Free!",
+        user: recipient,
+        zone: zone
+    }
+}
 
 /**********************************
  *      TEST ROUTES FOR EMAIL
@@ -134,10 +149,16 @@ app.get('/charge-finish-email', async () => {
     createEmail('', 'test email', 'ChargeFinished', chargeFinishedContext('Adam', 'Robotarium', 5));
 })
 app.get('/next-queue-email', async () => {
-    createEmail('', 'test email', 'NextQueue', nextQueueContext('Eve', 'Oriam', 2));
+    createEmail('', 'test email', 'NextQueue', nextQueueContext('Barry', 'Oriam', 2));
 })
 app.get('/park-sign-in-email', async () => {
-    createEmail('', 'test email', 'ParkingSignIn', signInContext('Mr President', 'Park J'));
+    createEmail('', 'test email', 'ParkingSignIn', signInContext('Clara', 'Park I'));
+})
+app.get('/login-email', async () => {
+    createEmail('', 'test email', 'LoginEmail', signInContext('Darren', 'EC'));
+})
+app.get('/space-email', async () => {
+    createEmail('', 'test email', 'LoginEmail', spaceAvailableContext('Earl', 'Park J'));
 })
 
 app.listen(PORT, () => {
