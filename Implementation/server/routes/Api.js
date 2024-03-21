@@ -38,8 +38,11 @@ router.post('/login', async function (req, res) {
 })
 
 router.get('/verify-user', async function (req, res) {
-    const { token } = req.query
+    const { token, location } = req.query
     if (token == null) return res.sendStatus(401)
+    const path = location
+        ? `/hwcharging/charger/${location}`
+        : '/hwcharging/chargers'
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
         const user = await prisma.users.findFirst({
@@ -48,7 +51,7 @@ router.get('/verify-user', async function (req, res) {
             },
         }) //remove localhost for deployment
         res.cookie('token', token, { httpOnly: true })
-        const url = 'http://localhost:8287' + '/hwcharging/chargers'
+        const url = 'http://localhost:8287' + path
         res.redirect(url)
     } catch (error) {
         res.sendStatus(401)
@@ -57,7 +60,7 @@ router.get('/verify-user', async function (req, res) {
 
 router.get('/login-check', verifyLogin, (req, res) => res.sendStatus(200))
 
-router.get('/location/:locationID/get-data', async function (req, res) {
+router.get('/location/:locationID/', async function (req, res) {
     const { params } = req
     if (params) {
         const { locationID } = params

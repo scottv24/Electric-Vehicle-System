@@ -4,14 +4,14 @@ import Spinner from '../Spinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelopeCircleCheck } from '@fortawesome/free-solid-svg-icons'
 
-export default function LoginForm({ message }) {
+export default function LoginForm({ message, location }) {
     const [email, setEmail] = useState('')
     const [loggingIn, setLoggingIn] = useState(false)
     const [emailSent, setEmailSent] = useState(false)
 
     async function submit() {
         setLoggingIn(true)
-        const { status } = await login(email)
+        const { status } = await login(email, location)
         if (status === 200) {
             setEmailSent(true)
         }

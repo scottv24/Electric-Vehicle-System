@@ -2,10 +2,10 @@ import axios from 'axios'
 
 export default async function getApiData(route) {
     try {
-        //`${window.location.origin.toString()}/hwcharging/api/${route}/get-data`
-        const url = `http://localhost:3000/api/${route}/get-data`
+        //`${window.location.origin.toString()}/hwcharging/api/${route}/`
+        const url = `http://localhost:3000/api/${route}/`
         const resp = await axios.get(
-            //`http://localhost:3000/api/${route}/get-data`,
+            //`http://localhost:3000/api/${route}/`,
             url,
             {
                 withCredentials: true,

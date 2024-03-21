@@ -3,7 +3,7 @@ const prisma = require('../prismaClient')
 const router = express.Router()
 const Prisma = require('@prisma/client')
 
-router.get('/get-data', async function (req, res) {
+router.get('/', async function (req, res) {
     const locationsRaw = await prisma.queue.findMany({
         select: { locationID: true, queueEntryTime: true },
         where: { userID: 1 },

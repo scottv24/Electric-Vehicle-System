@@ -30,7 +30,7 @@ if (process.env.PRODUCTION == 'TRUE') {
 
 const router = express.Router()
 
-router.get('/get-data', getChargers)
+router.get('/', getChargers)
 
 async function getChargers(req, res) {
     const chargers = await prisma.location.findMany({
