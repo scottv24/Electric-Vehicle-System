@@ -5,6 +5,8 @@ export default function Button({ color, children, ...props }) {
         styling = 'border-gray bg-gray bg-opacity-5 border-2 text-black'
     } else if (color === 'RED') {
         styling = 'bg-red text-white'
+    } else if (color === 'BLUE') {
+        styling = 'bg-unavailable text-white'
     }
 
     return (

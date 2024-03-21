@@ -1,9 +1,29 @@
 const express = require('express')
-const router = express.Router()
+const prisma = require('../prismaClient')
 
-router.get('/get-data', (req, res) => {
-    const chargers = ['list', 'of', 'accounts']
-    res.json({ chargers })
+const router = express.Router()
+const jwt = require('jsonwebtoken')
+//const { sendLoginLink } = require('./mailer') //Email logic
+
+//Testing purposes only - DELETE FOR RELEASE
+router.get('/get-data', async function (req, res) {
+    const accounts = await prisma.users.findMany()
+    res.json({ accounts })
 })
+
+// crypto.subtle
+//     .generateKey(
+//         {
+//             name: 'HMAC',
+//             hash: { name: 'SHA-256' },
+//         },
+//         true,
+//         ['sign', 'verify'],
+//     )
+//     .then((key) => {
+//         crypto.subtle.exportKey('jwk', key).then((exported) => {
+//             console.log(exported.k)
+//         })
+//     })
 
 module.exports = router

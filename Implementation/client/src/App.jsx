@@ -60,7 +60,18 @@ export default function App() {
                         </Page>
                     }
                 />
-                <Route path="/charger/:id" element={<ChargerModal />} />
+                <Route
+                    path="/charger/:id"
+                    element={
+                        <ChargerModal
+                            setOpen={(open) => {
+                                if (!open) {
+                                    window.location.replace('/')
+                                }
+                            }}
+                        />
+                    }
+                />
             </Routes>
         </div>
     )
