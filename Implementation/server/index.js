@@ -158,7 +158,7 @@ app.get('/login-email', async () => {
     createEmail('', 'test email', 'LoginEmail', signInContext('Darren', 'EC'));
 })
 app.get('/space-email', async () => {
-    createEmail('', 'test email', 'LoginEmail', spaceAvailableContext('Earl', 'Park J'));
+    createEmail('', 'test email', 'SpaceAvailable', spaceAvailableContext('Earl', 'Park J'));
 })
 
 app.listen(PORT, () => {
