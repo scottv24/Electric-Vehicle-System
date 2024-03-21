@@ -13,8 +13,12 @@ export const NavbarInfo = {
         { name: 'Admin Console', path: '/adminConsole', icon: faUserGear },
     ],
     client: [
-        { name: 'Chargers', path: '/chargers', icon: faChargingStation },
-        { name: 'Queues', path: '/queues', icon: faStopwatch },
-        { name: 'Profile', path: '/profile', icon: faUser },
+        {
+            name: 'Chargers',
+            path: '/hwcharging/chargers',
+            icon: faChargingStation,
+        },
+        { name: 'Queues', path: '/hwcharging/queues', icon: faStopwatch },
+        { name: 'Profile', path: '/hwcharging/profile', icon: faUser },
     ],
 }
