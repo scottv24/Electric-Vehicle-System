@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
 //const { sendLoginLink } = require('./mailer') //Email logic
 
 //Testing purposes only - DELETE FOR RELEASE
-router.get('/get-data', async function (req, res) {
+router.get('/', async function (req, res) {
     const accounts = await prisma.users.findMany()
     res.json({ accounts })
 })

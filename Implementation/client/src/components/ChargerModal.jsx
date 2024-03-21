@@ -59,6 +59,7 @@ export default function ChargerModal({ location, setOpen }) {
                                 ? 'to report charger status'
                                 : ''
                         }
+                        location={locationInfo.locationID}
                     />
                 </>
             )}

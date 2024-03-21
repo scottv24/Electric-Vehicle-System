@@ -14,7 +14,11 @@ async function Login(req, res) {
     const user = await prisma.users.findFirst({
         where: { email: req.body.email },
     })
-
+    const location = req.body.location
+    let redirect = ''
+    if (location) {
+        redirect = `&location=${location}`
+    }
     if (user != null) {
         try {
             const token = jwt.sign(
@@ -58,7 +62,7 @@ async function Login(req, res) {
                     template: 'loginEmail',
                     context: {
                         user: user.email,
-                        link: `http://localhost:3000/api/verify-user?token=${token}`,
+                        link: `http://localhost:3000/api/verify-user?token=${token}${redirect}`,
                     },
                 }
                 console.log('Sending email...')
