@@ -26,7 +26,6 @@ export default function AdminTableUsers({
 
 function Populate({ accounts, setSelectedAccount }) {
     const { email } = accounts
-    console.log('test123')
     return (
         <tr className="divide-solid bg-bg2 p-4">
             <td className="p-5 font-bold">

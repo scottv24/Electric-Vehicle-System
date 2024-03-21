@@ -29,15 +29,13 @@ if (process.env.PRODUCTION == 'TRUE') {
 const router = express.Router()
 
 router.patch('/set-permission-level', async function (req, res) {
-    console.log('sssssssssssssssssssssssssss')
     try {
-        console.log(req.body)
         email = req.body.email
         permLevel = req.body.permissionLevel
         if (email && permLevel) {
             //Check user exists
             try {
-                await prisma.users.findUniqueOrThrow({
+                await prisma.users.findFirstOrThrow({
                     where: {
                         email: email,
                     },
@@ -53,7 +51,7 @@ router.patch('/set-permission-level', async function (req, res) {
                 }
             }
 
-            await prisma.users.update({
+            await prisma.users.updateMany({
                 where: {
                     email: email,
                 },
@@ -104,7 +102,7 @@ router.get('/get-admin-users', async function (req, res) {
 
 router.delete('/clear-queue', async function (req, res) {
     try {
-        locationID = req.query.locationID
+        locationID = req.body.locationID
 
         if (locationID && !isNaN(locationID)) {
             locationID = parseInt(locationID)
@@ -145,15 +143,14 @@ router.delete('/clear-queue', async function (req, res) {
     }
 })
 
-router.post('/update-location', async function (req, res) {
+router.patch('/update-location', async function (req, res) {
     try {
-        locationID = req.query.locationID
-        newName = req.query.name
-        newWattage = req.query.wattage
-        newLat = req.query.lat
-        newLng = req.query.lng
-
-        if (newName && newWattage && newLat && newLng) {
+        const { location } = req.body
+        let { chargingPoint, locationID, wattage, lat, lng, name } = req.body
+        const filteredChargers = chargingPoint.filter(
+            (charger) => charger.updated,
+        )
+        if (name && wattage && lat && lng) {
             //If locationID is undefined, set it to -1 so that it creates a new one
             if (!locationID) {
                 locationID = -1
@@ -161,9 +158,9 @@ router.post('/update-location', async function (req, res) {
 
             if (
                 isNaN(locationID) ||
-                isNaN(newWattage) ||
-                isNaN(newLat) ||
-                isNaN(newLng)
+                isNaN(wattage) ||
+                isNaN(lat) ||
+                isNaN(lng)
             ) {
                 res.sendStatus(400)
 
@@ -171,28 +168,33 @@ router.post('/update-location', async function (req, res) {
             }
 
             locationID = parseInt(locationID)
-            newWattage = parseInt(newWattage)
-            newLat = parseInt(newLat)
-            newLng = parseInt(newLng)
-
+            wattage = parseInt(wattage)
+            lat = parseInt(lat)
+            lng = parseInt(lng)
             const newLocation = await prisma.location.upsert({
                 where: {
                     locationID: locationID,
                 },
                 update: {
-                    name: newName,
-                    wattage: newWattage,
-                    lat: newLat,
-                    lng: newLng,
+                    name: name,
+                    wattage: wattage,
+                    lat: lat,
+                    lng: lng,
                 },
                 create: {
-                    name: newName,
-                    wattage: newWattage,
-                    lat: newLat,
-                    lng: newLng,
+                    name: name,
+                    wattage: wattage,
+                    lat: lat,
+                    lng: lng,
                 },
             })
-
+            console.log(chargingPoint)
+            const statusCodes = await Promise.all(
+                chargingPoint.map(
+                    async (charger) => await UpdateCharger(charger),
+                ),
+            )
+            console.log(statusCodes)
             res.json({ message: newLocation, status: 201 })
         } else {
             res.sendStatus(400)
@@ -205,12 +207,56 @@ router.post('/update-location', async function (req, res) {
         res.sendStatus(500)
     }
 })
+async function UpdateCharger(chargingPoint) {
+    try {
+        chargingPointID = chargingPoint.chargingPointID
+        newStatus = chargingPoint.status
+        newLocationID = chargingPoint.locationID
+        if (newStatus) {
+            //If chargingPointID is undefined, set it to -1 so that it creates a new one
+            if (!chargingPointID) {
+                chargingPointID = -1
+            }
+
+            if (isNaN(chargingPointID)) {
+                return 400
+            }
+
+            chargingPointID = parseInt(chargingPointID)
+
+            const newChargingPoint = await prisma.chargingPoint.upsert({
+                where: {
+                    chargingPointID: chargingPointID,
+                },
+                update: {
+                    status: newStatus,
+                    locationID: newLocationID,
+                },
+                create: {
+                    status: newStatus,
+                    locationID: newLocationID,
+                },
+            })
+
+            return 201
+        } else {
+            return 400
+        }
+    } catch (err) {
+        console.log(
+            'Error when processing request admin/update-charging-point:\n\n' +
+                err,
+        )
+
+        return 500
+    }
+}
 
 router.post('/update-charging-point', async function (req, res) {
     try {
-        chargingPointID = req.query.chargingPointID
-        newStatus = req.query.status
-        newLocationID = req.query.locationID
+        chargingPointID = req.body.chargingPointID
+        newStatus = req.body.status
+        newLocationID = req.body.locationID
 
         if (newStatus && newLocationID) {
             //If chargingPointID is undefined, set it to -1 so that it creates a new one
@@ -219,9 +265,7 @@ router.post('/update-charging-point', async function (req, res) {
             }
 
             if (isNaN(chargingPointID) || isNaN(newLocationID)) {
-                res.sendStatus(400)
-
-                return
+                return 400
             }
 
             chargingPointID = parseInt(chargingPointID)
@@ -236,9 +280,7 @@ router.post('/update-charging-point', async function (req, res) {
                 })
             } catch (err) {
                 if (err.name == 'NotFoundError') {
-                    res.sendStatus(404)
-
-                    return
+                    return 404
                 } else {
                     throw err
                 }
@@ -258,9 +300,9 @@ router.post('/update-charging-point', async function (req, res) {
                 },
             })
 
-            res.json({ message: newChargingPoint, status: 201 })
+            return 201
         } else {
-            res.sendStatus(400)
+            return 400
         }
     } catch (err) {
         console.log(
@@ -268,13 +310,13 @@ router.post('/update-charging-point', async function (req, res) {
                 err,
         )
 
-        res.sendStatus(500)
+        return 500
     }
 })
 
 router.delete('/delete-location', async function (req, res) {
     try {
-        locationID = req.query.locationID
+        locationID = req.body.locationID
 
         if (locationID && !isNaN(locationID)) {
             locationID = parseInt(locationID)
@@ -317,7 +359,7 @@ router.delete('/delete-location', async function (req, res) {
 
 router.delete('/delete-charging-point', async function (req, res) {
     try {
-        chargingPointID = req.query.chargingPointID
+        chargingPointID = req.body.chargingPointID
 
         if (chargingPointID && !isNaN(chargingPointID)) {
             chargingPointID = parseInt(chargingPointID)

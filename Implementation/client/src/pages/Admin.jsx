@@ -9,21 +9,27 @@ import { findManyChargeLocations } from '../dummyData/BackendData'
 import Spinner from '../components/Spinner'
 import getApiData from '../data/getApiData'
 import AdminTable from '../components/AdminTable'
-import { Axios } from 'axios'
+import Axios from 'axios'
 
 export default function Admin() {
     const [chargeLocations, setChargeLocations] = useState(null)
     const [selectedLocation, setSelectedLocation] = useState(null)
+    const [adding, setNotAdding] = useState(null)
+    const [selectedLocCopy, setSelectedLocCopy] = useState(null)
+    const [updated, setUpdated] = useState(true)
     useEffect(() => {
         async function getChargers() {
             const { chargers } = await getApiData('chargers')
             if (chargers) {
-                console.log(chargers)
                 setChargeLocations(chargers)
             }
         }
-        getChargers()
-    }, [])
+        if (!updated) {
+            getChargers()
+        } else {
+            setUpdated(false)
+        }
+    }, [updated])
 
     return (
         <div className="w-full flex bg-bg">
@@ -97,6 +103,9 @@ export default function Admin() {
                                             <label>Wattage</label>
                                             <div className="w-2/5 border-solid border-2 border-gray rounded-lg">
                                                 <input
+                                                    defaultValue={
+                                                        selectedLocation.wattage
+                                                    }
                                                     className="w-1/2 bg-opacity-0"
                                                     type="number"
                                                     min="0"
@@ -110,6 +119,9 @@ export default function Admin() {
                                         <div className="w-3/4 flex justify-between">
                                             <label>LAT</label>
                                             <input
+                                                defaultValue={
+                                                    selectedLocation.lat
+                                                }
                                                 className="w-2/5 border-solid border-2 border-gray rounded-lg px-1"
                                                 type="number"
                                                 min="0"
@@ -117,6 +129,9 @@ export default function Admin() {
                                             />
                                             <label>LNG</label>
                                             <input
+                                                defaultValue={
+                                                    selectedLocation.lng
+                                                }
                                                 className="w-2/5 border-solid border-2 border-gray rounded-lg px-1"
                                                 type="number"
                                                 min="0"
@@ -133,7 +148,29 @@ export default function Admin() {
                                                         i + 1
                                                     }`}</label>
                                                     <select
-                                                        value={charger.status}
+                                                        onChange={(e) => {
+                                                            const locCopy = {
+                                                                ...selectedLocation,
+                                                                chargingPoint:
+                                                                    selectedLocation.chargingPoint.slice(
+                                                                        0
+                                                                    ),
+                                                            }
+                                                            locCopy.chargingPoint[
+                                                                i
+                                                            ].status =
+                                                                e.target.value
+                                                            locCopy.chargingPoint[
+                                                                i
+                                                            ].updated = true
+
+                                                            setSelectedLocCopy(
+                                                                locCopy
+                                                            )
+                                                        }}
+                                                        defaultValue={
+                                                            charger.status
+                                                        }
                                                         className="w-2/5 border-solid border-2 border-gray rounded-lg"
                                                         name={`chargerStates${i}`}
                                                     >
@@ -147,6 +184,15 @@ export default function Admin() {
                                                             Broken
                                                         </option>
                                                     </select>
+                                                    <button
+                                                        onClick={() => {
+                                                            updateFunction(
+                                                                selectedLocCopy
+                                                            )
+                                                        }}
+                                                    >
+                                                        Update Charger
+                                                    </button>
                                                 </div>
                                             )
                                         )}
@@ -159,4 +205,13 @@ export default function Admin() {
             </MainBody>
         </div>
     )
+}
+
+async function updateFunction(location) {
+    const response = await Axios.patch(
+        'http://localhost:3000/api/admin/update-location',
+        location,
+        {}
+    )
+    return
 }

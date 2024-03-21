@@ -10,18 +10,22 @@ import Axios from 'axios'
 export default function AdminConsole() {
     const [accounts, setAccount] = useState(null)
     const [selectedAccount, setSelectedAccount] = useState(null)
-    const adding = null
+    const [adding, setNotAdding] = useState(null)
+    const [updated, setUpdated] = useState(true)
     useEffect(() => {
         async function getUsers() {
             const { admins } = await getApiData('admin/get-admin-users')
             if (admins) {
                 setAccount(admins)
-                console.log(admins.length)
             }
             return
         }
-        getUsers()
-    }, [])
+        if (!updated) {
+            getUsers()
+        } else {
+            setUpdated(false)
+        }
+    }, [updated])
 
     return (
         <div className="w-full flex bg-bg">
@@ -34,12 +38,50 @@ export default function AdminConsole() {
                             Charging Locations
                         </h1>
                         <div className="p-4  grid-cols-4 h-full">
-                            <button
-                                className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right"
-                                onClick={() => {}}
-                            >
-                                Add New Admin
-                            </button>
+                            {!adding ? (
+                                <button
+                                    className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right"
+                                    onClick={() => {
+                                        setNotAdding(true)
+                                    }}
+                                >
+                                    Add New Admin
+                                </button>
+                            ) : (
+                                <div>
+                                    <button
+                                        className="w-1/2 hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right"
+                                        onClick={() => {
+                                            setNotAdding(null)
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="w-1/2 hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right"
+                                        onClick={async () => {
+                                            await AddAdmin(
+                                                document.getElementById(
+                                                    'userEmail'
+                                                ).value
+                                            )
+                                            setUpdated(true)
+                                            setNotAdding(null)
+                                        }}
+                                    >
+                                        Update
+                                    </button>
+                                    <label class="align-left">
+                                        Enter Email:{' '}
+                                    </label>
+                                    <input
+                                        class=" w-3/4 rounded-md border-2 p-0 sm:text-sm"
+                                        name="userEmail"
+                                        type="text"
+                                        id="userEmail"
+                                    ></input>
+                                </div>
+                            )}
                             {!selectedAccount ? (
                                 <AdminTableUsers
                                     accounts={accounts}
@@ -69,6 +111,8 @@ export default function AdminConsole() {
                                                 RemoveAdmin(
                                                     selectedAccount.email
                                                 )
+                                                setSelectedAccount(null)
+                                                setUpdated(true)
                                             }}
                                         >
                                             Remove Admin
@@ -85,8 +129,6 @@ export default function AdminConsole() {
 }
 
 async function RemoveAdmin(email) {
-    console.log('Entered RemoveAdmin')
-    console.log(email)
     const permissionLevel = 'USER'
     const body = { email, permissionLevel }
     const response = await Axios.patch(
@@ -97,5 +139,12 @@ async function RemoveAdmin(email) {
     return
 }
 async function AddAdmin(email) {
+    const permissionLevel = 'ADMIN'
+    const body = { email, permissionLevel }
+    const response = await Axios.patch(
+        'http://localhost:3000/api/admin/update-location',
+        body,
+        {}
+    )
     return
 }
