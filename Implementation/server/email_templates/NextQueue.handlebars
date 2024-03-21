@@ -18,10 +18,6 @@
             width: 50%;
         }
         .logo {
-            width: 200px; 
-            max-width: 200px; 
-            height: 100px; 
-            max-height: 100px; 
             padding: 2%
         }
     </style>
@@ -36,14 +32,14 @@
             <tr>
                 <td>
                     <!-- Logo -->
-                    <img class="logo" src="cid:testLogo" alt="Logo">
+                    <img class="logo" src="cid:logo" alt="Logo">
                 </td>
             </tr>
             <tr>
                 <td>
                     <!-- Email Contents -->
-                    <h1 class="text"> {{title}} </h1>
-                    <p class="text"> Hello {{user}}, You are currently next in queue at {{zone}} </p>
+                    <h1 class="text"> <b> {{title}} </b></h1>
+                    <p class="text"> Hello <b>{{user}}</b>, You are currently next in queue at <b>{{zone}}</b> </p>
                     <p class="text"> This space may still be occupied but the current space-holder has been notified that their vehicle is finished charging! </p>
                     <p class="text"> You may recieve another email when that user has vacated. </p> 
                 </td>
@@ -58,11 +54,10 @@
             <tr>
                 <td>
                     <!-- Your inverted logo is here -->
-                    <img class="logo" alt="Logo" src="cid:testLogo" align="center">
+                    <img class="logo" alt="Logo" src="cid:logo" align="center">
 
                     <p class="text">
-                        MengDevChargers@Gmail.com
-                        </a>
+                        <i> MengDevChargers@Gmail.com </i>
                     </p>
 
                 </td>

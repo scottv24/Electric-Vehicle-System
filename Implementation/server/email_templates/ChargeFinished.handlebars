@@ -18,10 +18,6 @@
             width: 50%;
         }
         .logo {
-            width: 200px; 
-            max-width: 200px; 
-            height: 100px; 
-            max-height: 100px; 
             padding: 2%
         }
     </style>
@@ -36,16 +32,16 @@
             <tr>
                 <td>
                     <!-- Logo -->
-                    <img class="logo" src="cid:testLogo" alt="Logo">
+                    <img class="logo" src="cid:logo" alt="Logo">
                 </td>
             </tr>
             <tr>
                 <td>
                     <!-- Email Contents -->
-                    <h1 class="text"> {{title}} </h1>
-                    <p class="text"> Hello {{user}}, Your vehicle currently parked at {{zone}} has finished charger! </p>
+                    <h1 class="text"> <b>{{title}}</b> </h1>
+                    <p class="text"> Hello <b>{{user}}</b>, Your vehicle currently parked at <b>{{zone}}</b> has finished charger! </p>
                     <p class="text"> In order to give everyone a chance to charge please consider moving your vehicle when safe to do so. </p>
-                    <p class="text"> There are currently {{queueSize}} people waiting for an opportunity to charge at this location. </p>
+                    <p class="text"> There are currently <b>{{queueSize}}</b> people waiting for an opportunity to charge at this location. </p>
                     </p>              
                 </td>
             </tr>
@@ -59,11 +55,10 @@
             <tr>
                 <td>
                     <!-- Your inverted logo is here -->
-                    <img class="logo" alt="Logo" src="cid:testLogo" align="center">
+                    <img class="logo" alt="Logo" src="cid:logo" align="center">
 
                     <p class="text">
-                        MengDevChargers@Gmail.com
-                        </a>
+                        <i>MengDevChargers@Gmail.com</i>
                     </p>
 
                 </td>

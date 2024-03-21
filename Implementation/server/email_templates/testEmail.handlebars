@@ -17,31 +17,25 @@
             width: 50%;
         }
         .logo {
-            width: 200px; 
-            max-width: 200px; 
-            height: 100px; 
-            max-height: 100px; 
             padding: 2%
         }
     </style>
 </head>
 
 <body>
-    
-
     <!-- Start single column section -->
     <table class="container" style="background-color: #fff;" align="center">
         <tbody>
             <tr>
                 <td>
                     <!-- Logo -->
-                    <img class="logo" src="cid:testLogo" alt="Logo">
+                    <img class="logo" src="cid:logo" alt="Logo">
                 </td>
             </tr>
             <tr>
                 <td>
                     <!-- Email Contents -->
-                    <h1 class="text"> {{title}} </h1>
+                    <h1 class="text"><b> {{title}} <b></h1>
                     <p class="text"> Apologies if you are seeing this message it means an error has resulted. You may disregard this email.</p>              
                 </td>
             </tr>
@@ -55,23 +49,27 @@
             <tr>
                 <td>
                     <!-- Your inverted logo is here -->
-                    <img class="logo" alt="Logo" src="cid:testLogo" align="center">
+                    <img class="logo" alt="Logo" src="cid:logo" align="center">
 
                     <p class="text">
-                        MengDevChargers@Gmail.com
-                        </a>
+                       <i> MengDevChargers@Gmail.com </i>
                     </p>
 
                 </td>
             </tr>
         </tbody>
     </table>
-    <!-- End footer -->
 
     <!-- Ending Note -->
-    <div class="text" align="center">
-        <p> Development of this application is ongoing, there may be bugs.</p>
-    </div>
+    <table class="container" style="background-color: #fff;" align="center">
+        <tbody>
+            <tr>
+                <td>
+                    <p class="text"> Development of this application is ongoing, there may be bugs.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 
 </html>

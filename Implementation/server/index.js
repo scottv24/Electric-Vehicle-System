@@ -71,9 +71,9 @@ function createEmail(recipient, subject, template, context) {
         context: context,
         // all emails have an attachement which is the logo
         attachments: [{
-            filename: 'testLogo.png',
-            path: __dirname + '/email_templates/testLogo.png',
-            cid: 'testLogo' //same cid value as in the html img src
+            filename: 'logo.ico',
+            path: __dirname + '/email_templates/logo.ico',
+            cid: 'logo' //same cid value as in the html img src
         }]
     }
 
