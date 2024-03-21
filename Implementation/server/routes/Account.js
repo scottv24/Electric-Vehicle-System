@@ -1,6 +1,6 @@
 const express = require('express')
 const prisma = require('../prismaClient')
-const { CheckUser, Login, CreateUser } = require('../services/Login')
+
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 //const { sendLoginLink } = require('./mailer') //Email logic
@@ -9,39 +9,6 @@ const jwt = require('jsonwebtoken')
 router.get('/get-data', async function (req, res) {
     const accounts = await prisma.users.findMany()
     res.json({ accounts })
-})
-
-router.post('/login', async function (req, res) {
-    const { body } = req
-    if (!body || !body.email) {
-        res.status(400)
-        res.send()
-        return
-    }
-    const exists = await CheckUser(body.email)
-    if (!exists) {
-        await CreateUser(body.email)
-    }
-    await Login(req, res)
-})
-
-router.get('/verify-user', async function (req, res) {
-    const token = req.query.token
-    if (token == null) return res.sendStatus(401)
-    try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
-
-        const user = await prisma.users.findFirst({
-            where: {
-                id: decodedToken.userId,
-            },
-        }) //remove localhost for deployment
-        const url =
-            'https://769e-2a02-c7c-c850-8e00-5044-ea83-495d-774.ngrok-free.app'
-        res.redirect(url)
-    } catch (error) {
-        res.sendStatus(401)
-    }
 })
 
 // crypto.subtle

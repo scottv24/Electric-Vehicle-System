@@ -48,7 +48,7 @@ async function Login(req, res) {
                     extName: '.handlebars',
                 }),
             )
-            console.log('Hola')
+
             try {
                 // example email
                 const emailOptions = {
@@ -58,7 +58,7 @@ async function Login(req, res) {
                     template: 'loginEmail',
                     context: {
                         user: user.email,
-                        link: `http://localhost:3000/api/account/verify-user?token=${token}`,
+                        link: `http://localhost:3000/api/verify-user?token=${token}`,
                     },
                 }
                 console.log('Sending email...')

@@ -2,11 +2,11 @@ const nodemailer = require('nodemailer')
 const express = require('express')
 const cors = require('cors')
 const app = express()
+const cookies = require('cookie-parser')
 
-var PORT = process.env.HOST_PORT;
+var PORT = process.env.HOST_PORT
 
-if(PORT == undefined)
-{
+if (PORT == undefined) {
     PORT = 3000
 }
 
@@ -19,12 +19,14 @@ if(PORT == undefined)
 // const jwt = require('jsonwebtoken')
 // const nodeMailer = require('nodemailer')
 app.use(express.json())
-app.use(cors())
+app.use(cookies())
+app.use(cors({ credentials: true, origin: 'http://localhost:8287' }))
 
 const apiRoute = require('./routes/Api')
 const hbs = require('nodemailer-express-handlebars')
 
 app.get('/', (req, res) => {
+    console.log(req.cookies)
     res.send('EV Charging Backend :)')
 })
 app.use(express.json())
