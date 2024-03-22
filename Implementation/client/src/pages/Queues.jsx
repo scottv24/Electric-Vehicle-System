@@ -9,6 +9,7 @@ import Button from '../components/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
 import LeaveQueueModal from '../components/LeaveQueueModal'
+import StatusInfo from '../components/PendingInfo'
 
 export default function Queues() {
     const [queues, setQueues] = useState(null)
@@ -16,11 +17,19 @@ export default function Queues() {
     const [leavingSelector, setLeavingSelector] = useState(false)
     const [selectedQueues, setSelectedQueues] = useState({})
     const [refresh, setRefresh] = useState(true)
+    const [status, setStatus] = useState(null)
     useEffect(() => {
         if (!refresh) {
             return
         }
         async function getQueues() {
+            const status = await getApiData('account/status')
+            if (status.status === 'PENDING' || status.status === 'CHARGING') {
+                setStatus(status)
+                return
+            } else {
+                setStatus(null)
+            }
             const { queues } = await getApiData('queues')
             if (queues) {
                 setQueues(queues)
@@ -35,7 +44,15 @@ export default function Queues() {
             <Navbar active={'Queues'} type="client" />
             <MainBody>
                 <h1 className="font-bold text-3xl p-2 w-full">Queues</h1>
-                <Spinner enabled={!queues} />
+                <Spinner enabled={!queues && !status} />
+                {status && (
+                    <div className="p-8 flex flex-col justify-center align-middle text-center font-bold">
+                        <StatusInfo
+                            status={status}
+                            refresh={() => setRefresh(true)}
+                        />
+                    </div>
+                )}
                 {queues && (
                     <div className="mx-auto w-3/4 flex flex-col items-center gap-3 overflow-y-auto no-scrollbar pb-10">
                         {queues.length > 0 ? (

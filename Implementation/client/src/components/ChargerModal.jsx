@@ -6,15 +6,18 @@ import LocationInfo from './LocationInfo'
 import Logo from './Logo'
 import LoginForm from './forms/Login'
 import { loggedInCheck } from '../data/login'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+import { joinQueue } from '../data/joinQueue'
+import Spinner from './Spinner'
+import StatusInfo from './PendingInfo'
 
 export default function ChargerModal({ location, setOpen }) {
     const { id } = useParams()
     const [locationInfo, setLocationInfo] = useState(null)
     const [loggedOut, setLoggedOut] = useState(false)
     const [action, setAction] = useState(null)
-
+    const [chargerPointID, setCharger] = useState(null)
+    const [chargerLocationID, setChargerLocationID] = useState(null)
+    const [failure, setFail] = useState(false)
     useEffect(() => {
         const getLocation = async () => {
             const { location } = await getApiData(`location/${id}`)
@@ -23,7 +26,6 @@ export default function ChargerModal({ location, setOpen }) {
 
         const checkLoggedOut = async () => {
             const loggedOut = await loggedInCheck(true)
-            console.log(loggedOut)
             setLoggedOut(loggedOut)
         }
 
@@ -34,11 +36,27 @@ export default function ChargerModal({ location, setOpen }) {
         }
         checkLoggedOut()
     }, [])
-    if (action === 'RESERVE') {
-        console.log('here')
+
+    async function queue(locations) {
+        const { chargerLocationID, chargingPointID, failure } = await joinQueue(
+            locations
+        )
+        if (failure) {
+            setFail(failure)
+            return
+        }
+        if (chargerLocationID) {
+            setCharger(chargingPointID)
+            setChargerLocationID(chargerLocationID)
+        }
     }
+
+    if (action === 'RESERVE' && !loggedOut) {
+        queue([locationInfo.locationID])
+    }
+
     return (
-        <Modal>
+        <Modal setOpen={setOpen} noSubmitExit={true}>
             {!action && (
                 <LocationInfo
                     location={locationInfo}
@@ -63,20 +81,34 @@ export default function ChargerModal({ location, setOpen }) {
                     />
                 </>
             )}
-            {action === 'RESERVE' && !loggedOut && (
-                <div className="flex flex-col justify-center p-4 text-center h-full align-middle">
-                    <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-5xl text-accent"
-                    />
-                    <h2 className="text-accent text-xl my-8">
-                        Charger 1 Successfully Reserved
-                    </h2>
-                    <p>
-                        You have 30 mins to get to the charger before your
-                        reservation will be cancelled.
-                    </p>
+            {action === 'RESERVE' && chargerPointID && !loggedOut && (
+                <div className="flex flex-col justify-center text-center h-full align-middle overflow-hidden">
+                    {chargerPointID ? (
+                        <StatusInfo
+                            status={{
+                                chargingPointID: chargerPointID,
+                                chargerLocationID,
+                                location: locationInfo.name,
+                                status: 'PENDING',
+                            }}
+                            modal={true}
+                            refresh={() => setOpen(false)}
+                        />
+                    ) : (
+                        <>
+                            <Spinner />
+                            <p className="text-accent text-xl">
+                                Reserving Charger...
+                            </p>
+                        </>
+                    )}
                 </div>
+            )}
+            {failure && !chargerLocationID && (
+                <p className="text-red font-bold text-lg">
+                    Can't {action === 'RESERVE' ? 'reserve' : 'check into'}{' '}
+                    charger while already assigned a charger.
+                </p>
             )}
         </Modal>
     )

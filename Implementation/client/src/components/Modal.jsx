@@ -2,9 +2,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Card from './Card'
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
 
-export default function Modal({ setOpen, children }) {
+export default function Modal({ setOpen, children, noSubmitExit }) {
     const handleChildElementClick = (e) => {
-        if (e.target.type !== 'submit') {
+        if (noSubmitExit || e.target.type !== 'submit') {
             e.stopPropagation()
         }
     }

@@ -92,8 +92,19 @@ async function CreateUser(email) {
     })
 }
 
+async function getUserID(req) {
+    try {
+        const { token } = req.cookies
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
+        return +decodedToken.userId
+    } catch (err) {
+        return null
+    }
+}
+
 module.exports = {
     CheckUser,
     Login,
     CreateUser,
+    getUserID,
 }
