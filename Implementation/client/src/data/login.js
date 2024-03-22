@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export async function login(email, location) {
     const resp = await axios.post(
-        `http://localhost:3000/api/login`,
+        `${window.location.origin.toString()}/hwcharging/api/login`,
         { email, location },
         {
             headers: {
@@ -16,7 +16,7 @@ export async function login(email, location) {
 
 export async function loggedInCheck(stopRedirect) {
     try {
-        const resp = await axios.get(`http://localhost:3000/api/login-check`, {
+        const resp = await axios.get(`${window.location.origin.toString()}/hwcharging/api/login-check`, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json',

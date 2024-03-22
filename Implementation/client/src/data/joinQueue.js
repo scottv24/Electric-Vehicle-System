@@ -3,7 +3,7 @@ import axios from 'axios'
 export async function joinQueue(locations) {
     try {
         const resp = await axios.post(
-            `http://localhost:3000/api/queues/join-queue`,
+            `${window.location.origin.toString()}/hwcharging/api/queues/join-queue`,
             { locations },
             {
                 withCredentials: true,
@@ -27,7 +27,7 @@ export async function joinQueue(locations) {
 export async function checkIn(chargingPointID) {
     try {
         await axios.patch(
-            `http://localhost:3000/api/queues/check-in`,
+            `${window.location.origin.toString()}/hwcharging/api/queues/check-in`,
             { chargingPointID },
             {
                 withCredentials: true,
@@ -46,7 +46,7 @@ export async function checkIn(chargingPointID) {
 export async function checkOut() {
     try {
         await axios.patch(
-            `http://localhost:3000/api/queues/check-out`,
+            `${window.location.origin.toString()}/hwcharging/api/queues/check-out`,
             {},
             {
                 withCredentials: true,
@@ -65,7 +65,7 @@ export async function checkOut() {
 export async function cancelReservation() {
     try {
         await axios.patch(
-            `http://localhost:3000/api/queues/cancel-reservation`,
+            `${window.location.origin.toString()}/hwcharging/api/queues/cancel-reservation`,
             {},
             {
                 withCredentials: true,

@@ -9,7 +9,9 @@ import { loggedInCheck } from '../data/login'
 import { joinQueue } from '../data/joinQueue'
 import Spinner from './Spinner'
 import StatusInfo from './PendingInfo'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+ 
 export default function ChargerModal({ location, setOpen }) {
     const { id } = useParams()
     const [locationInfo, setLocationInfo] = useState(null)
@@ -18,17 +20,19 @@ export default function ChargerModal({ location, setOpen }) {
     const [chargerPointID, setCharger] = useState(null)
     const [chargerLocationID, setChargerLocationID] = useState(null)
     const [failure, setFail] = useState(false)
+    const [joinedQueue, setJoined] = useState(false)
+ 
     useEffect(() => {
         const getLocation = async () => {
             const { location } = await getApiData(`location/${id}`)
             setLocationInfo(location)
         }
-
+ 
         const checkLoggedOut = async () => {
             const loggedOut = await loggedInCheck(true)
             setLoggedOut(loggedOut)
         }
-
+ 
         if (!location) {
             getLocation()
         } else {
@@ -36,25 +40,29 @@ export default function ChargerModal({ location, setOpen }) {
         }
         checkLoggedOut()
     }, [])
-
+ 
     async function queue(locations) {
         const { chargerLocationID, chargingPointID, failure } = await joinQueue(
             locations
         )
         if (failure) {
             setFail(failure)
+            setJoined(false)
             return
+        } else {
+            setFail(false)
+            setJoined(true)
         }
         if (chargerLocationID) {
             setCharger(chargingPointID)
             setChargerLocationID(chargerLocationID)
         }
     }
-
-    if (action === 'RESERVE' && !loggedOut) {
+ 
+    if (action === 'RESERVE' || (action === 'QUEUE' && !loggedOut)) {
         queue([locationInfo.locationID])
     }
-
+ 
     return (
         <Modal setOpen={setOpen} noSubmitExit={true}>
             {!action && (
@@ -109,6 +117,17 @@ export default function ChargerModal({ location, setOpen }) {
                     Can't {action === 'RESERVE' ? 'reserve' : 'check into'}{' '}
                     charger while already assigned a charger.
                 </p>
+            )}
+            {joinedQueue && !chargerLocationID && (
+                <div className="p-8 flex flex-col justify-center align-middle text-center h-full">
+                    <FontAwesomeIcon
+                        icon={faCheckCircle}
+                        className="text-accent font-bold text-3xl"
+                    />
+                    <p className="text-accent font-bold text-xl p-2">
+                        Succesfully joined queue.
+                    </p>
+                </div>
             )}
         </Modal>
     )

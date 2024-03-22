@@ -10,6 +10,94 @@ if (PORT == undefined) {
     PORT = 3000
 }
 
+var fs = require('fs').promises;
+
+// var jwtSecret;
+
+// if(process.env.PRODUCTION == "TRUE")
+// {
+//     fs.readFileSync("/run/secrets/jwt-secret", { encoding: 'utf8', flag: 'r' }, function(err, data) {
+//         if (err) 
+//         {
+//             console.log("Cannot find JWT secret. Is it set as a Docker secret correctly?");
+
+//             throw err;
+//         }
+
+//         console.log(data)
+
+//         jwtSecret = data
+//     });
+// }
+// else
+// {
+//     jwtSecret = process.env.JWT_SECRET;
+// }
+
+// var emailPassword;
+
+// if(process.env.PRODUCTION == "TRUE")
+// {
+//     fs.readFileSync("/run/secrets/email-password", { encoding: 'utf8', flag: 'r' }, function(err, data) {
+//         if (err) 
+//         {
+//             console.log("Cannot find email password. Is it set as a Docker secret correctly?");
+
+//             throw err;
+//         }
+
+//         console.log(data)
+//         emailPassword = data
+//     });
+// }
+// else
+// {
+//     emailPassword = process.env.EMAIL_APP_PASSWORD;
+// }
+
+async function getJWTSecret(){
+    if(process.env.PRODUCTION == "TRUE")
+    {
+        try{
+
+            return (await fs.readFile("/run/secrets/jwt-secret", 'utf8')).replace(/(\r\n|\n|\r)/gm, "");
+        }
+        catch(err)
+        {
+            console.error(`Error reading jwt secret. Is it set as a Docker secret correctly?`);
+        }
+    }
+    else
+    {
+        return process.env.JWT_SECRET;
+    }
+} 
+
+async function getEmailSecret(){
+    if(process.env.PRODUCTION == "TRUE")
+    {
+        try{
+
+            return (await fs.readFile("/run/secrets/email-password", 'utf8')).replace(/(\r\n|\n|\r)/gm, "");
+        }
+        catch(err)
+        {
+            console.error(`Error reading email password. Is it set as a Docker secret correctly?`);
+        }
+    }
+    else
+    {
+        return process.env.EMAIL_APP_PASSWORD;
+    }
+} 
+
+//console.log(jwtSecret)
+//console.log(emailPassword)
+
+//console.log(await getJWTSecret())
+
+module.exports = {getJWTSecret, getEmailSecret}
+
 // const config = require('/config/config.js')
 // const SECRET = 'test'
 // const ngrok_url = '<PUT YOUR NGROK HTTP URL HERE>'
@@ -20,7 +108,8 @@ if (PORT == undefined) {
 // const nodeMailer = require('nodemailer')
 app.use(express.json())
 app.use(cookies())
-app.use(cors({ credentials: true, origin: 'http://localhost:8287' }))
+//app.use(cors({ credentials: true, origin: 'http://localhost:8287' }))
+app.use(cors({ credentials: true }))
 
 const apiRoute = require('./routes/Api')
 const hbs = require('nodemailer-express-handlebars')

@@ -3,7 +3,37 @@ const router = express.Router()
 const { verifyLogin } = require('../middleware/verifyLogin')
 const { CheckUser, Login, CreateUser } = require('../services/Login')
 const jwt = require('jsonwebtoken')
-const prisma = require('../prismaClient')
+
+var fs = require('fs')
+const { PrismaClient } = require('@prisma/client')
+
+var prisma = new PrismaClient();
+
+if(process.env.PRODUCTION == "TRUE")
+{
+    fs.readFile("/run/secrets/db-url", 'utf8', function(err, data) {
+        if (err) 
+        {
+            console.log("Cannot find database connection URL. Is it set as a Docker secret correctly?");
+
+            throw err;
+        }
+
+        prisma = new PrismaClient({
+            datasources: {
+            db: {
+                    url: data,
+                },
+            },
+        });
+    });
+}
+else
+{
+    prisma = new PrismaClient();
+}
+
+const {getJWTSecret} = require('../index')
 
 // Import nested routes
 const chargerRoutes = require('./Chargers')
@@ -41,19 +71,20 @@ router.get('/verify-user', async function (req, res) {
     const { token, location } = req.query
     if (token == null) return res.sendStatus(401)
     const path = location
-        ? `/hwcharging/charger/${location}`
-        : '/hwcharging/chargers'
+        ? `/charger/${location}`
+        : '/chargers'
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
+        const decodedToken = jwt.verify(token, await getJWTSecret())
         const user = await prisma.users.findFirst({
             where: {
                 id: decodedToken.userId,
             },
         }) //remove localhost for deployment
         res.cookie('token', token, { httpOnly: true })
-        const url = 'http://localhost:8287' + path
+        const url = `${process.env.HOST_NAME}` + path
         res.redirect(url)
     } catch (error) {
+        console.log(error)
         res.sendStatus(401)
     }
 })
