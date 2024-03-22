@@ -10,14 +10,14 @@ if (PORT == undefined) {
     PORT = 3000
 }
 
-var fs = require('fs').promises;
+var fs = require('fs').promises
 
 // var jwtSecret;
 
 // if(process.env.PRODUCTION == "TRUE")
 // {
 //     fs.readFileSync("/run/secrets/jwt-secret", { encoding: 'utf8', flag: 'r' }, function(err, data) {
-//         if (err) 
+//         if (err)
 //         {
 //             console.log("Cannot find JWT secret. Is it set as a Docker secret correctly?");
 
@@ -39,7 +39,7 @@ var fs = require('fs').promises;
 // if(process.env.PRODUCTION == "TRUE")
 // {
 //     fs.readFileSync("/run/secrets/email-password", { encoding: 'utf8', flag: 'r' }, function(err, data) {
-//         if (err) 
+//         if (err)
 //         {
 //             console.log("Cannot find email password. Is it set as a Docker secret correctly?");
 
@@ -55,48 +55,44 @@ var fs = require('fs').promises;
 //     emailPassword = process.env.EMAIL_APP_PASSWORD;
 // }
 
-async function getJWTSecret(){
-    if(process.env.PRODUCTION == "TRUE")
-    {
-        try{
+async function getJWTSecret() {
+    if (process.env.PRODUCTION == 'TRUE') {
+        try {
+            return (
+                await fs.readFile('/run/secrets/jwt-secret', 'utf8')
+            ).replace(/(\r\n|\n|\r)/gm, '')
+        } catch (err) {
+            console.error(
+                `Error reading jwt secret. Is it set as a Docker secret correctly?`,
+            )
+        }
+    } else {
+        return process.env.JWT_SECRET
+    }
+}
 
-            return (await fs.readFile("/run/secrets/jwt-secret", 'utf8')).replace(/(\r\n|\n|\r)/gm, "");
+async function getEmailSecret() {
+    if (process.env.PRODUCTION == 'TRUE') {
+        try {
+            return (
+                await fs.readFile('/run/secrets/email-password', 'utf8')
+            ).replace(/(\r\n|\n|\r)/gm, '')
+        } catch (err) {
+            console.error(
+                `Error reading email password. Is it set as a Docker secret correctly?`,
+            )
         }
-        catch(err)
-        {
-            console.error(`Error reading jwt secret. Is it set as a Docker secret correctly?`);
-        }
+    } else {
+        return process.env.EMAIL_APP_PASSWORD
     }
-    else
-    {
-        return process.env.JWT_SECRET;
-    }
-} 
-
-async function getEmailSecret(){
-    if(process.env.PRODUCTION == "TRUE")
-    {
-        try{
-
-            return (await fs.readFile("/run/secrets/email-password", 'utf8')).replace(/(\r\n|\n|\r)/gm, "");
-        }
-        catch(err)
-        {
-            console.error(`Error reading email password. Is it set as a Docker secret correctly?`);
-        }
-    }
-    else
-    {
-        return process.env.EMAIL_APP_PASSWORD;
-    }
-} 
+}
 
 //console.log(jwtSecret)
 //console.log(emailPassword)
 
 //console.log(await getJWTSecret())
 
-module.exports = {getJWTSecret, getEmailSecret}
+module.exports = { getJWTSecret, getEmailSecret }
 
 // const config = require('/config/config.js')
 // const SECRET = 'test'
@@ -108,8 +104,8 @@ module.exports = {getJWTSecret, getEmailSecret}
 // const nodeMailer = require('nodemailer')
 app.use(express.json())
 app.use(cookies())
-//app.use(cors({ credentials: true, origin: 'http://localhost:8287' }))
-app.use(cors({ credentials: true }))
+app.use(cors({ credentials: true, origin: 'http://localhost:8287' }))
+//app.use(cors({ credentials: true }))
 
 const apiRoute = require('./routes/Api')
 const hbs = require('nodemailer-express-handlebars')
@@ -152,18 +148,20 @@ emailTransport.use(
 
 // Function to compose and send an email
 function createEmail(recipient, subject, template, context) {
-    var emailOptions =  {
+    var emailOptions = {
         from: 'mengdevcharger@gmail.com',
         to: recipient, //test email here
         subject: subject,
         template: template,
         context: context,
         // all emails have an attachement which is the logo
-        attachments: [{
-            filename: 'logo.ico',
-            path: __dirname + '/email_templates/logo.ico',
-            cid: 'logo' //same cid value as in the html img src
-        }]
+        attachments: [
+            {
+                filename: 'logo.ico',
+                path: __dirname + '/email_templates/logo.ico',
+                cid: 'logo', //same cid value as in the html img src
+            },
+        ],
     }
 
     // attempt to send the email
@@ -184,47 +182,47 @@ function createEmail(recipient, subject, template, context) {
 /**********************************
  *      EMAIL CONTEXTS
  *      Each email only cares about certain information
- *      The following functions sets the information to 
+ *      The following functions sets the information to
  *      be used in the email
  **********************************/
 let testEmailContext = {
-    title: "Test Email!"
+    title: 'Test Email!',
 }
 let chargeFinishedContext = (recipient, zone, queueSize) => {
     return {
-        title: "Your Vehicle is Fully Charged!",
+        title: 'Your Vehicle is Fully Charged!',
         user: recipient,
         zone: zone,
-        queueSize: queueSize
+        queueSize: queueSize,
     }
 }
 let nextQueueContext = (recipient, zone, queueSize) => {
     return {
-        title: "You Are Next in Queue!",
+        title: 'You Are Next in Queue!',
         user: recipient,
         zone: zone,
     }
 }
 let signInContext = (recipient, zone) => {
     return {
-        title: "Thank You For Using",
+        title: 'Thank You For Using',
         user: recipient,
-        zone: zone
+        zone: zone,
     }
 }
 let LoginContext = (recipient, zone, link) => {
     return {
-        title: "Attention Required!",
+        title: 'Attention Required!',
         user: recipient,
         zone: zone,
-        link: link
+        link: link,
     }
 }
 let spaceAvailableContext = (recipient, zone) => {
     return {
-        title: "A Space is Free!",
+        title: 'A Space is Free!',
         user: recipient,
-        zone: zone
+        zone: zone,
     }
 }
 
@@ -232,22 +230,42 @@ let spaceAvailableContext = (recipient, zone) => {
  *      TEST ROUTES FOR EMAIL
  **********************************/
 app.get('/test-email', async () => {
-    createEmail('', 'test email', 'testEmail', testEmailContext);
+    createEmail('', 'test email', 'testEmail', testEmailContext)
 })
 app.get('/charge-finish-email', async () => {
-    createEmail('', 'test email', 'ChargeFinished', chargeFinishedContext('Adam', 'Robotarium', 5));
+    createEmail(
+        '',
+        'test email',
+        'ChargeFinished',
+        chargeFinishedContext('Adam', 'Robotarium', 5),
+    )
 })
 app.get('/next-queue-email', async () => {
-    createEmail('', 'test email', 'NextQueue', nextQueueContext('Barry', 'Oriam', 2));
+    createEmail(
+        '',
+        'test email',
+        'NextQueue',
+        nextQueueContext('Barry', 'Oriam', 2),
+    )
 })
 app.get('/park-sign-in-email', async () => {
-    createEmail('', 'test email', 'ParkingSignIn', signInContext('Clara', 'Park I'));
+    createEmail(
+        '',
+        'test email',
+        'ParkingSignIn',
+        signInContext('Clara', 'Park I'),
+    )
 })
 app.get('/login-email', async () => {
-    createEmail('', 'test email', 'LoginEmail', signInContext('Darren', 'EC'));
+    createEmail('', 'test email', 'LoginEmail', signInContext('Darren', 'EC'))
 })
 app.get('/space-email', async () => {
-    createEmail('', 'test email', 'SpaceAvailable', spaceAvailableContext('Earl', 'Park J'));
+    createEmail(
+        '',
+        'test email',
+        'SpaceAvailable',
+        spaceAvailableContext('Earl', 'Park J'),
+    )
 })
 
 app.listen(PORT, () => {

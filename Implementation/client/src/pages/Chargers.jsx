@@ -18,6 +18,7 @@ export default function Chargers() {
         }, 1000)*/
 
         async function getChargers() {
+            console.log('Getting chargers')
             let data = await getApiData('chargers')
             if (!data) {
                 data = { chargers: findManyChargeLocations }

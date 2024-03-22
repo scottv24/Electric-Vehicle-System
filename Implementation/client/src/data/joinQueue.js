@@ -1,9 +1,10 @@
 import axios from 'axios'
+import { backendURL } from '../Env'
 
 export async function joinQueue(locations) {
     try {
         const resp = await axios.post(
-            `${window.location.origin.toString()}/hwcharging/api/queues/join-queue`,
+            `${backendURL}/api/queues/join-queue`,
             { locations },
             {
                 withCredentials: true,
@@ -27,7 +28,7 @@ export async function joinQueue(locations) {
 export async function checkIn(chargingPointID) {
     try {
         await axios.patch(
-            `${window.location.origin.toString()}/hwcharging/api/queues/check-in`,
+            `${backendURL}/api/queues/check-in`,
             { chargingPointID },
             {
                 withCredentials: true,
@@ -46,7 +47,7 @@ export async function checkIn(chargingPointID) {
 export async function checkOut() {
     try {
         await axios.patch(
-            `${window.location.origin.toString()}/hwcharging/api/queues/check-out`,
+            `${backendURL}/api/queues/check-out`,
             {},
             {
                 withCredentials: true,
@@ -65,7 +66,7 @@ export async function checkOut() {
 export async function cancelReservation() {
     try {
         await axios.patch(
-            `${window.location.origin.toString()}/hwcharging/api/queues/cancel-reservation`,
+            `${backendURL}/api/queues/cancel-reservation`,
             {},
             {
                 withCredentials: true,

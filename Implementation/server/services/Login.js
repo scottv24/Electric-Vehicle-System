@@ -1,36 +1,34 @@
 var fs = require('fs')
 const { PrismaClient } = require('@prisma/client')
 
-var prisma = new PrismaClient();
+var prisma = new PrismaClient()
 
-if(process.env.PRODUCTION == "TRUE")
-{
-    fs.readFile("/run/secrets/db-url", 'utf8', function(err, data) {
-        if (err) 
-        {
-            console.log("Cannot find database connection URL. Is it set as a Docker secret correctly?");
+if (process.env.PRODUCTION == 'TRUE') {
+    fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
+        if (err) {
+            console.log(
+                'Cannot find database connection URL. Is it set as a Docker secret correctly?',
+            )
 
-            throw err;
+            throw err
         }
 
         prisma = new PrismaClient({
             datasources: {
-            db: {
+                db: {
                     url: data,
                 },
             },
-        });
-    });
-}
-else
-{
-    prisma = new PrismaClient();
+        })
+    })
+} else {
+    prisma = new PrismaClient()
 }
 const hbs = require('nodemailer-express-handlebars')
 const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken')
 
-const {getJWTSecret, getEmailSecret} = require('../index')
+const { getJWTSecret, getEmailSecret } = require('../index')
 
 async function CheckUser(email) {
     const user = await prisma.users.findFirst({
@@ -43,7 +41,7 @@ async function Login(req, res) {
     const user = await prisma.users.findFirst({
         where: { email: req.body.email },
     })
-    
+
     const location = req.body.location
     let redirect = ''
     if (location) {
@@ -51,13 +49,10 @@ async function Login(req, res) {
     }
     if (user != null) {
         try {
-            console.log("'" + await getJWTSecret() + "'")
             const jwtSecret = await getJWTSecret()
-            const token = jwt.sign(
-                { userId: user.id },
-                jwtSecret,
-                { expiresIn: '1h' },
-            )
+            const token = jwt.sign({ userId: user.id }, jwtSecret, {
+                expiresIn: '1h',
+            })
             // create the transport channel for emails to be sent through
             const emailTransport = nodemailer.createTransport({
                 service: 'gmail',

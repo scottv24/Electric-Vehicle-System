@@ -7,33 +7,31 @@ const jwt = require('jsonwebtoken')
 var fs = require('fs')
 const { PrismaClient } = require('@prisma/client')
 
-var prisma = new PrismaClient();
+var prisma = new PrismaClient()
 
-if(process.env.PRODUCTION == "TRUE")
-{
-    fs.readFile("/run/secrets/db-url", 'utf8', function(err, data) {
-        if (err) 
-        {
-            console.log("Cannot find database connection URL. Is it set as a Docker secret correctly?");
+if (process.env.PRODUCTION == 'TRUE') {
+    fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
+        if (err) {
+            console.log(
+                'Cannot find database connection URL. Is it set as a Docker secret correctly?',
+            )
 
-            throw err;
+            throw err
         }
 
         prisma = new PrismaClient({
             datasources: {
-            db: {
+                db: {
                     url: data,
                 },
             },
-        });
-    });
-}
-else
-{
-    prisma = new PrismaClient();
+        })
+    })
+} else {
+    prisma = new PrismaClient()
 }
 
-const {getJWTSecret} = require('../index')
+const { getJWTSecret } = require('../index')
 
 // Import nested routes
 const chargerRoutes = require('./Chargers')
@@ -70,9 +68,7 @@ router.post('/login', async function (req, res) {
 router.get('/verify-user', async function (req, res) {
     const { token, location } = req.query
     if (token == null) return res.sendStatus(401)
-    const path = location
-        ? `/charger/${location}`
-        : '/chargers'
+    const path = location ? `/charger/${location}` : '/chargers'
     try {
         const decodedToken = jwt.verify(token, await getJWTSecret())
         const user = await prisma.users.findFirst({
@@ -81,7 +77,8 @@ router.get('/verify-user', async function (req, res) {
             },
         }) //remove localhost for deployment
         res.cookie('token', token, { httpOnly: true })
-        const url = `${process.env.HOST_NAME}` + path
+        const url =
+            `${process.env.FRONTEND_URL || process.env.HOST_NAME}` + path
         res.redirect(url)
     } catch (error) {
         console.log(error)
