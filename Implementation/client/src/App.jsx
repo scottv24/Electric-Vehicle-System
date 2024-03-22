@@ -2,21 +2,18 @@ import { Route, Routes, useParams } from 'react-router-dom'
 import Login from './pages/Login'
 import Chargers from './pages/Chargers'
 import Page from './pages/Page'
-import QRCodePage from './pages/QRCode'
 import Admin from './pages/Admin'
 import AdminConsole from './pages/AdminConsole'
 import Dashboard from './pages/Dashboard'
-import Navbar from './components/Navbar'
 import Queues from './pages/Queues'
-import LocationInfo from './components/LocationInfo'
 import ChargerModal from './components/ChargerModal'
+import { rootURL } from './Env'
 
 export default function App() {
     return (
         <div className="min-h-screen w-screen">
             <Routes>
                 <Route path="/" element={<Login />} />
-                <Route path="/charger1" element={<QRCodePage />} />
                 <Route
                     path="/Admin"
                     element={
@@ -66,7 +63,7 @@ export default function App() {
                         <ChargerModal
                             setOpen={(open) => {
                                 if (!open) {
-                                    window.location.replace('/')
+                                    window.location.replace(rootURL)
                                 }
                             }}
                         />

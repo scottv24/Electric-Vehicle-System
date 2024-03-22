@@ -69,7 +69,7 @@ async function getQueues(locations, time) {
     ORDER BY position ASC;`
     return queues
 }
-router.delete('/leave-queue', async function (req, res) {
+router.post('/leave-queue', async function (req, res) {
     await leaveQueue(req, res)
 })
 
@@ -199,7 +199,8 @@ async function joinQueues(req, res) {
 
 async function leaveQueue(req, res) {
     const { body } = req
-    const { locations, userID } = body
+    const { locations } = body
+    const userID = getUserID(req)
     const locationsList = JSON.parse(locations)
 
     if (!locations || !userID) {

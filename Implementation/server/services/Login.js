@@ -1,7 +1,34 @@
-const prisma = require('../prismaClient')
+var fs = require('fs')
+const { PrismaClient } = require('@prisma/client')
+
+var prisma = new PrismaClient()
+
+if (process.env.PRODUCTION == 'TRUE') {
+    fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
+        if (err) {
+            console.log(
+                'Cannot find database connection URL. Is it set as a Docker secret correctly?',
+            )
+
+            throw err
+        }
+
+        prisma = new PrismaClient({
+            datasources: {
+                db: {
+                    url: data,
+                },
+            },
+        })
+    })
+} else {
+    prisma = new PrismaClient()
+}
 const hbs = require('nodemailer-express-handlebars')
 const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken')
+
+const { getJWTSecret, getEmailSecret } = require('../index')
 
 async function CheckUser(email) {
     const user = await prisma.users.findFirst({
@@ -14,6 +41,7 @@ async function Login(req, res) {
     const user = await prisma.users.findFirst({
         where: { email: req.body.email },
     })
+
     const location = req.body.location
     let redirect = ''
     if (location) {
@@ -21,12 +49,10 @@ async function Login(req, res) {
     }
     if (user != null) {
         try {
-            const token = jwt.sign(
-                { userId: user.id },
-                process.env.JWT_SECRET,
-                { expiresIn: '1h' },
-            )
-
+            const jwtSecret = await getJWTSecret()
+            const token = jwt.sign({ userId: user.id }, jwtSecret, {
+                expiresIn: '1h',
+            })
             // create the transport channel for emails to be sent through
             const emailTransport = nodemailer.createTransport({
                 service: 'gmail',
@@ -34,7 +60,7 @@ async function Login(req, res) {
                 // sender information
                 auth: {
                     user: 'mengdevcharger@gmail.com',
-                    pass: process.env.EMAIL_APP_PASSWORD, // app password goes here
+                    pass: await getEmailSecret(), // app password goes here
                 },
             })
 
@@ -61,7 +87,7 @@ async function Login(req, res) {
                     template: 'loginEmail',
                     context: {
                         user: user.email,
-                        link: `http://localhost:3000/api/verify-user?token=${token}${redirect}`,
+                        link: `${process.env.HOST_NAME}/api/verify-user?token=${token}${redirect}`,
                     },
                 }
                 console.log('Sending email...')
@@ -95,7 +121,7 @@ async function CreateUser(email) {
 async function getUserID(req) {
     try {
         const { token } = req.cookies
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
+        const decodedToken = jwt.verify(token, await getJWTSecret())
         return +decodedToken.userId
     } catch (err) {
         return null
