@@ -2,231 +2,281 @@ const express = require('express')
 var fs = require('fs')
 const { PrismaClient } = require('@prisma/client')
 
-var prisma = new PrismaClient();
+var prisma = new PrismaClient()
 
-if(process.env.PRODUCTION == "TRUE")
-{
-    fs.readFile("/run/secrets/db-url", 'utf8', function(err, data) {
-        if (err) 
-        {
-            console.log("Cannot find database connection URL. Is it set as a Docker secret correctly?");
+if (process.env.PRODUCTION == 'TRUE') {
+    fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
+        if (err) {
+            console.log(
+                'Cannot find database connection URL. Is it set as a Docker secret correctly?',
+            )
 
-            throw err;
+            throw err
         }
 
         prisma = new PrismaClient({
             datasources: {
-            db: {
+                db: {
                     url: data,
                 },
             },
-        });
-    });
-}
-else
-{
-    prisma = new PrismaClient();
+        })
+    })
+} else {
+    prisma = new PrismaClient()
 }
 
 const router = express.Router()
 
 router.patch('/set-permission-level', async function (req, res) {
-    
     try {
-        userID = req.query.userID;
-        permLevel = req.query.permissionLevel;
-        
-        if(userID && permLevel && !isNaN(userID))
-        {
-            userID = parseInt(userID)
-
+        email = req.body.email
+        permLevel = req.body.permissionLevel
+        if (email && permLevel) {
             //Check user exists
             try {
-                await prisma.users.findUniqueOrThrow({
+                await prisma.users.findFirstOrThrow({
                     where: {
-                    id: userID
-                }});
-
+                        email: email,
+                    },
+                })
             } catch (err) {
-                if(err.name == "NotFoundError"){
-                    res.sendStatus(404);
+                if (err.name == 'NotFoundError') {
+                    res.sendStatus(404)
 
-                    return;
+                    return
                 } else {
-                    throw err;
+                    throw err
                 }
             }
 
-            await prisma.users.update({ 
-                where: { 
-                    id: userID
-                }, 
+            await prisma.users.updateMany({
+                where: {
+                    email: email,
+                },
                 data: {
-                    permissionLevel: permLevel
-                }});
+                    permissionLevel: permLevel,
+                },
+            })
 
-            res.sendStatus(200);
-        }
-        else
-        {
-            res.sendStatus(400);
+            res.sendStatus(200)
+        } else {
+            res.sendStatus(400)
         }
     } catch (err) {
+        console.log(
+            'Error when processing request admin/set-permission-level:\n\n' +
+                err,
+        )
 
-        console.log("Error when processing request admin/set-permission-level:\n\n" + err);
-
-        res.sendStatus(500);
+        res.sendStatus(500)
     }
 })
 
-router.get('/get-admin-users', async function (req, res)  {
-    
+router.get('/get-admin-users', async function (req, res) {
     try {
-        const admins = await prisma.users.findMany({ 
+        const admins = await prisma.users.findMany({
             where: {
-            OR: [{ 
-                permissionLevel: "ADMIN"
-            }, { 
-                permissionLevel: "SUPERADMIN"
-            }]},
+                OR: [
+                    {
+                        permissionLevel: 'ADMIN',
+                    },
+                    {
+                        permissionLevel: 'SUPERADMIN',
+                    },
+                ],
+            },
             select: {
-                email: true
-            }});
-
-        res.json({ admins });
-
+                email: true,
+            },
+        })
+        res.json({ admins })
     } catch (err) {
-
-        console.log("Error when processing request admin/get-admin-users:\n\n" + err);
-
-        res.sendStatus(500);
+        console.log(
+            'Error when processing request admin/get-admin-users:\n\n' + err,
+        )
+        res.sendStatus(500)
     }
 })
 
-router.delete('/clear-queue', async function (req, res)  {
-    
+router.delete('/clear-queue', async function (req, res) {
     try {
-        locationID = req.query.locationID;
+        locationID = req.body.locationID
 
-        if(locationID && !isNaN(locationID))
-        {
+        if (locationID && !isNaN(locationID)) {
             locationID = parseInt(locationID)
 
             //Check location exists
             try {
                 await prisma.location.findUniqueOrThrow({
                     where: {
-                        locationID: locationID
-                }});
+                        locationID: locationID,
+                    },
+                })
             } catch (err) {
-                if(err.name == "NotFoundError"){
-                    res.sendStatus(404);
+                if (err.name == 'NotFoundError') {
+                    res.sendStatus(404)
 
-                    return;
+                    return
                 } else {
-                    throw err;
+                    throw err
                 }
             }
 
-            await prisma.queue.deleteMany({ 
+            await prisma.queue.deleteMany({
                 where: {
-                    locationID: locationID
-                }});
+                    locationID: locationID,
+                },
+            })
 
-            res.sendStatus(200);
+            res.sendStatus(200)
+        } else {
+            res.sendStatus(400)
         }
-        else
-        {
-            res.sendStatus(400);
-        }
-
     } catch (err) {
+        console.log(
+            'Error when processing request admin/clear-queue:\n\n' + err,
+        )
 
-        console.log("Error when processing request admin/clear-queue:\n\n" + err);
-
-        res.sendStatus(500);
+        res.sendStatus(500)
     }
 })
 
-router.post('/update-location', async function (req, res)  {
-    
+router.patch('/update-location', async function (req, res) {
     try {
-        locationID = req.query.locationID;
-        newName = req.query.name;
-        newWattage = req.query.wattage;
-        newLat = req.query.lat;
-        newLng = req.query.lng;
+        const { location } = req.body
+        let { chargingPoint, locationID, wattage, lat, lng, name, noChargers } =
+            req.body
+        const filteredChargers = chargingPoint.filter(
+            (charger) => charger.updated,
+        )
 
-        if(newName && newWattage && newLat && newLng)
-        {
+        if (name && wattage && lat && lng) {
             //If locationID is undefined, set it to -1 so that it creates a new one
-            if(!locationID)
-            {
-                locationID = -1;
+            if (!locationID) {
+                locationID = -1
             }
 
-            if(isNaN(locationID) || isNaN(newWattage) || isNaN(newLat) || isNaN(newLng))
-            {
-                res.sendStatus(400);
+            if (
+                isNaN(locationID) ||
+                isNaN(wattage) ||
+                isNaN(lat) ||
+                isNaN(lng)
+            ) {
+                res.sendStatus(400)
 
-                return;
+                return
             }
 
             locationID = parseInt(locationID)
-            newWattage = parseInt(newWattage)
-            newLat = parseInt(newLat)
-            newLng = parseInt(newLng)
-
-            const newLocation = await prisma.location.upsert({ 
+            wattage = parseInt(wattage)
+            lat = parseInt(lat)
+            lng = parseInt(lng)
+            const newLocation = await prisma.location.upsert({
                 where: {
-                    locationID: locationID
-                }, update: {
-                    name: newName,
-                    wattage: newWattage,
-                    lat: newLat,
-                    lng: newLng
-                }, create: {
-                    name: newName,
-                    wattage: newWattage,
-                    lat: newLat,
-                    lng: newLng
-                }});
+                    locationID: locationID,
+                },
+                update: {
+                    name: name,
+                    wattage: wattage,
+                    lat: lat,
+                    lng: lng,
+                },
+                create: {
+                    name: name,
+                    wattage: wattage,
+                    lat: lat,
+                    lng: lng,
+                },
+            })
+            if (noChargers) {
+                const chargers = []
+                for (let i = 0; i < noChargers; i++) {
+                    chargers.push({
+                        locationID: newLocation.locationID,
+                        status: 'IDLE',
+                    })
+                }
 
-            res.json({ message: newLocation, status: 201 });
-        }
-        else
-        {
-            res.sendStatus(400);
-        }
+                chargingPoint = chargers
+            }
+            const statusCodes = await Promise.all(
+                chargingPoint.map(
+                    async (charger) => await UpdateCharger(charger),
+                ),
+            )
 
+            res.json({ message: newLocation, status: 201 })
+        } else {
+            res.sendStatus(400)
+        }
     } catch (err) {
+        console.log(
+            'Error when processing request admin/update-location:\n\n' + err,
+        )
 
-        console.log("Error when processing request admin/update-location:\n\n" + err);
-
-        res.sendStatus(500);
+        res.sendStatus(500)
     }
 })
-
-router.post('/update-charging-point', async function (req, res)  {
-    
+async function UpdateCharger(chargingPoint) {
     try {
-        chargingPointID = req.query.chargingPointID;
-        newStatus = req.query.status;
-        newLocationID = req.query.locationID;
-
-        if(newStatus && newLocationID)
-        {
+        chargingPointID = chargingPoint.chargingPointID
+        newStatus = chargingPoint.status
+        newLocationID = chargingPoint.locationID
+        if (newStatus) {
             //If chargingPointID is undefined, set it to -1 so that it creates a new one
-            if(!chargingPointID)
-            {
-                chargingPointID = -1;
+            if (!chargingPointID) {
+                chargingPointID = -1
             }
 
-            if(isNaN(chargingPointID) || isNaN(newLocationID))
-            {
-                res.sendStatus(400);
+            if (isNaN(chargingPointID)) {
+                return 400
+            }
 
-                return;
+            chargingPointID = parseInt(chargingPointID)
+
+            const newChargingPoint = await prisma.chargingPoint.upsert({
+                where: {
+                    chargingPointID: chargingPointID,
+                },
+                update: {
+                    status: newStatus,
+                    locationID: newLocationID,
+                },
+                create: {
+                    status: newStatus,
+                    locationID: newLocationID,
+                },
+            })
+
+            return 201
+        } else {
+            return 400
+        }
+    } catch (err) {
+        console.log(
+            'Error when processing request admin/update-charging-point:\n\n' +
+                err,
+        )
+
+        return 500
+    }
+}
+
+router.post('/update-charging-point', async function (req, res) {
+    try {
+        chargingPointID = req.body.chargingPointID
+        newStatus = req.body.status
+        newLocationID = req.body.locationID
+
+        if (newStatus && newLocationID) {
+            //If chargingPointID is undefined, set it to -1 so that it creates a new one
+            if (!chargingPointID) {
+                chargingPointID = -1
+            }
+
+            if (isNaN(chargingPointID) || isNaN(newLocationID)) {
+                return 400
             }
 
             chargingPointID = parseInt(chargingPointID)
@@ -236,133 +286,129 @@ router.post('/update-charging-point', async function (req, res)  {
             try {
                 await prisma.location.findUniqueOrThrow({
                     where: {
-                        locationID: newLocationID
-                }});
+                        locationID: newLocationID,
+                    },
+                })
             } catch (err) {
-                if(err.name == "NotFoundError"){
-                    res.sendStatus(404);
-
-                    return;
+                if (err.name == 'NotFoundError') {
+                    return 404
                 } else {
-                    throw err;
+                    throw err
                 }
             }
 
-            const newChargingPoint = await prisma.chargingPoint.upsert({ 
+            const newChargingPoint = await prisma.chargingPoint.upsert({
                 where: {
-                    chargingPointID: chargingPointID
-                }, update: {
+                    chargingPointID: chargingPointID,
+                },
+                update: {
                     status: newStatus,
-                    locationID: newLocationID
-                }, create: {
+                    locationID: newLocationID,
+                },
+                create: {
                     status: newStatus,
-                    locationID: newLocationID
-                }});
+                    locationID: newLocationID,
+                },
+            })
 
-            res.json({ message: newChargingPoint, status: 201 });
+            return 201
+        } else {
+            return 400
         }
-        else
-        {
-            res.sendStatus(400);
-        }
-
     } catch (err) {
+        console.log(
+            'Error when processing request admin/update-charging-point:\n\n' +
+                err,
+        )
 
-        console.log("Error when processing request admin/update-charging-point:\n\n" + err);
-
-        res.sendStatus(500);
+        return 500
     }
 })
 
-router.delete('/delete-location', async function (req, res)  {
-    
+router.delete('/delete-location', async function (req, res) {
     try {
-        locationID = req.query.locationID;
+        locationID = req.body.locationID
 
-        if(locationID && !isNaN(locationID))
-        {
+        if (locationID && !isNaN(locationID)) {
             locationID = parseInt(locationID)
 
             //Check location exists
             try {
                 await prisma.location.findUniqueOrThrow({
                     where: {
-                        locationID: locationID
-                }});
+                        locationID: locationID,
+                    },
+                })
             } catch (err) {
-                if(err.name == "NotFoundError"){
-                    res.sendStatus(404);
+                if (err.name == 'NotFoundError') {
+                    res.sendStatus(404)
 
-                    return;
+                    return
                 } else {
-                    throw err;
+                    throw err
                 }
             }
 
-            await prisma.location.delete({ 
-                where: 
-                {
-                    locationID: locationID
-                }});
+            await prisma.location.delete({
+                where: {
+                    locationID: locationID,
+                },
+            })
 
-            res.sendStatus(200);
+            res.sendStatus(200)
+        } else {
+            res.sendStatus(400)
         }
-        else
-        {
-            res.sendStatus(400);
-        }
-
     } catch (err) {
+        console.log(
+            'Error when processing request admin/delete-location:\n\n' + err,
+        )
 
-        console.log("Error when processing request admin/delete-location:\n\n" + err);
-
-        res.sendStatus(500);
+        res.sendStatus(500)
     }
 })
 
-router.delete('/delete-charging-point', async function (req, res)  {
-    
+router.delete('/delete-charging-point', async function (req, res) {
     try {
-        chargingPointID = req.query.chargingPointID;
+        chargingPointID = req.body.chargingPointID
 
-        if(chargingPointID && !isNaN(chargingPointID))
-        {
+        if (chargingPointID && !isNaN(chargingPointID)) {
             chargingPointID = parseInt(chargingPointID)
 
             //Check charging point exists
             try {
                 await prisma.chargingPoint.findUniqueOrThrow({
                     where: {
-                        chargingPointID: chargingPointID
-                }});
+                        chargingPointID: chargingPointID,
+                    },
+                })
             } catch (err) {
-                if(err.name == "NotFoundError"){
-                    res.sendStatus(404);
+                if (err.name == 'NotFoundError') {
+                    res.sendStatus(404)
 
-                    return;
+                    return
                 } else {
-                    throw err;
+                    throw err
                 }
             }
 
-            await prisma.chargingPoint.delete({ 
-                where: 
-                {
-                    chargingPointID: chargingPointID
-                }});
+            await prisma.chargingPoint.delete({
+                where: {
+                    chargingPointID: chargingPointID,
+                },
+            })
 
-            res.sendStatus(200);
+            res.sendStatus(200)
+        } else {
+            res.sendStatus(400)
         }
-        else
-        {
-            res.sendStatus(400);
-        }
-
     } catch (err) {
+        console.log(
+            'Error when processing request admin/delete-charging-point:\n\n' +
+                err,
+        )
 
-        console.log("Error when processing request admin/delete-charging-point:\n\n" + err);
-
-        res.sendStatus(500);
+        res.sendStatus(500)
     }
 })
 
