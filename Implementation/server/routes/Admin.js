@@ -42,7 +42,6 @@ router.patch('/set-permission-level', async function (req, res) {
                 })
             } catch (err) {
                 if (err.name == 'NotFoundError') {
-                    console.log(err)
                     res.sendStatus(404)
 
                     return
@@ -146,10 +145,12 @@ router.delete('/clear-queue', async function (req, res) {
 router.patch('/update-location', async function (req, res) {
     try {
         const { location } = req.body
-        let { chargingPoint, locationID, wattage, lat, lng, name } = req.body
+        let { chargingPoint, locationID, wattage, lat, lng, name, noChargers } =
+            req.body
         const filteredChargers = chargingPoint.filter(
             (charger) => charger.updated,
         )
+
         if (name && wattage && lat && lng) {
             //If locationID is undefined, set it to -1 so that it creates a new one
             if (!locationID) {
@@ -188,13 +189,23 @@ router.patch('/update-location', async function (req, res) {
                     lng: lng,
                 },
             })
-            console.log(chargingPoint)
+            if (noChargers) {
+                const chargers = []
+                for (let i = 0; i < noChargers; i++) {
+                    chargers.push({
+                        locationID: newLocation.locationID,
+                        status: 'IDLE',
+                    })
+                }
+
+                chargingPoint = chargers
+            }
             const statusCodes = await Promise.all(
                 chargingPoint.map(
                     async (charger) => await UpdateCharger(charger),
                 ),
             )
-            console.log(statusCodes)
+
             res.json({ message: newLocation, status: 201 })
         } else {
             res.sendStatus(400)

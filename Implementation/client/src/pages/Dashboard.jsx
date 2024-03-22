@@ -3,7 +3,6 @@ import Navbar from '../components/Navbar'
 import Card from '../components/Card'
 
 export default function Dashboard() {
-    console.log('test')
     return (
         <div className="w-full flex">
             <Navbar active={'Dashboard'} type="admin" />

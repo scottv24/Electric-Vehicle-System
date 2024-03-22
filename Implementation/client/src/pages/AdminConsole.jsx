@@ -142,7 +142,7 @@ async function AddAdmin(email) {
     const permissionLevel = 'ADMIN'
     const body = { email, permissionLevel }
     const response = await Axios.patch(
-        'http://localhost:3000/api/admin/update-location',
+        'http://localhost:3000/api/admin/set-permission-level',
         body,
         {}
     )
