@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
- 
-export default function NavbarLink({ field, active, mobile }) {
+
+export default function NavbarLink({ field, active, mobile, reportCount }) {
+    console.log(reportCount)
     if (mobile) {
         return (
             <div
@@ -37,7 +38,18 @@ export default function NavbarLink({ field, active, mobile }) {
                 {field.icon && (
                     <FontAwesomeIcon icon={field.icon} className="mr-4" />
                 )}
-                <p className="md:block hidden">{field.name}</p>
+                <p
+                    className={`md:block hidden overflow-hidden ${
+                        field.path === 'reports' ? 'text-nowrap' : ''
+                    }`}
+                >
+                    {field.name}{' '}
+                    {field.path === 'reports' && (
+                        <span className="bg-white text-accent font-bold rounded-full aspect-square px-2">
+                            {reportCount}
+                        </span>
+                    )}
+                </p>
             </a>
         </li>
     )

@@ -26,11 +26,32 @@ export async function loggedInCheck(stopRedirect) {
         })
         console.log(resp)
         if (resp.status === 200 && !stopRedirect) {
-            //window.location.replace('/hwcharging/chargers')
+            window.location.replace('/hwcharging/chargers')
         }
     } catch (err) {
         if (err.response && err.response.status === 403) {
             return true
+        }
+        return
+    }
+}
+
+export async function adminCheck(stopRedirect) {
+    try {
+        const resp = await axios.get(`${backendURL}/api/admin-check`, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': '1',
+            },
+        })
+        console.log(resp)
+        if (resp.status === 200 && !stopRedirect) {
+            return true
+        }
+    } catch (err) {
+        if (err.response && err.response.status === 403) {
+            return false
         }
         return
     }

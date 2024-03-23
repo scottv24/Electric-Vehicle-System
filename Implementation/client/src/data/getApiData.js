@@ -16,7 +16,6 @@ export default async function getApiData(route) {
                 },
             }
         )
-        console.log(resp)
         const data = resp.data
         return data
     } catch (err) {

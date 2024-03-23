@@ -4,6 +4,7 @@ import {
     faUser,
     faUserGear,
     faChartLine,
+    faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 
 export const NavbarInfo = {
@@ -13,12 +14,13 @@ export const NavbarInfo = {
             path: 'Admin',
             icon: faChargingStation,
         },
-        { name: 'Dashboard', path: 'dashboard', icon: faChartLine },
+        { name: 'Reports', path: 'reports', icon: faChartLine },
         {
             name: 'Admin Console',
             path: 'adminConsole',
             icon: faUserGear,
         },
+        { name: 'Main Site', path: 'chargers', icon: faArrowLeft },
     ],
     client: [
         {
