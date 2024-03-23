@@ -4,7 +4,7 @@ import Chargers from './pages/Chargers'
 import Page from './pages/Page'
 import Admin from './pages/Admin'
 import AdminConsole from './pages/AdminConsole'
-import Dashboard from './pages/Dashboard'
+import Reports from './pages/Reports'
 import Queues from './pages/Queues'
 import ChargerModal from './components/ChargerModal'
 import { rootURL } from './Env'
@@ -33,11 +33,11 @@ export default function App() {
                     }
                 />
                 <Route
-                    path="/Dashboard"
+                    path="/Reports"
                     element={
                         <Page>
                             {' '}
-                            <Dashboard />
+                            <Reports />
                         </Page>
                     }
                 />

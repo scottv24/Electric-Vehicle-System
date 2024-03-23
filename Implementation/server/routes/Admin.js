@@ -412,4 +412,88 @@ router.delete('/delete-charging-point', async function (req, res) {
     }
 })
 
+router.get('/report', getReport)
+router.patch('/validate-broken', validateBroken)
+router.patch('/remove-report', removeReport)
+router.get('/report-count', getReportCount)
+
+async function getReport(req, res) {
+    try {
+        const report = await prisma.report.findMany({
+            include: { chargingPoint: { include: { location: true } } },
+        })
+
+        // Get the chargers numbers relative to their locations
+        await Promise.all(
+            report.map(async (charger) => {
+                const chargerLocationID = await getChargerLocationID(
+                    charger.chargingPointID,
+                    charger.chargingPoint.locationID,
+                )
+                charger.chargerLocationID = chargerLocationID
+            }),
+        )
+
+        return res.json({ report })
+    } catch (err) {
+        console.log('Error getting admin reports.')
+        console.log(err)
+        return res.sendStatus(500)
+    }
+}
+
+async function getChargerLocationID(chargingPointID, locationID) {
+    const locationChargers = await prisma.chargingPoint.findMany({
+        where: {
+            locationID: locationID,
+            chargingPointID: {
+                lt: chargingPointID,
+            },
+        },
+    })
+    return locationChargers.length + 1
+}
+
+async function validateBroken(req, res) {
+    try {
+        const { chargingPointID } = req.body
+        await prisma.chargingPoint.update({
+            where: { chargingPointID },
+            data: { status: 'BROKEN' },
+        })
+        await prisma.report.deleteMany({
+            where: { chargingPointID },
+        })
+        return res.sendStatus(200)
+    } catch (err) {
+        console.log('Error validating admin report.')
+        console.log(err)
+        return res.sendStatus(500)
+    }
+}
+
+async function removeReport(req, res) {
+    try {
+        const { reportID } = req.body
+        await prisma.report.delete({
+            where: { reportID },
+        })
+        return res.sendStatus(200)
+    } catch (err) {
+        console.log('Error removing admin report.')
+        console.log(err)
+        return res.sendStatus(500)
+    }
+}
+
+async function getReportCount(req, res) {
+    try {
+        const reports = await prisma.report.findMany()
+        res.json({ count: reports.length })
+    } catch (err) {
+        console.log('Error getting report count.')
+        console.log(err)
+        return res.sendStatus(500)
+    }
+}
 module.exports = router
