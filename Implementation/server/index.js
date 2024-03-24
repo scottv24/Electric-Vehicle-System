@@ -12,51 +12,8 @@ if (PORT == undefined) {
 
 var fs = require('fs').promises
 
-// var jwtSecret;
-
-// if(process.env.PRODUCTION == "TRUE")
-// {
-//     fs.readFileSync("/run/secrets/jwt-secret", { encoding: 'utf8', flag: 'r' }, function(err, data) {
-//         if (err)
-//         {
-//             console.log("Cannot find JWT secret. Is it set as a Docker secret correctly?");
-
-//             throw err;
-//         }
-
-//         console.log(data)
-
-//         jwtSecret = data
-//     });
-// }
-// else
-// {
-//     jwtSecret = process.env.JWT_SECRET;
-// }
-
-// var emailPassword;
-
-// if(process.env.PRODUCTION == "TRUE")
-// {
-//     fs.readFileSync("/run/secrets/email-password", { encoding: 'utf8', flag: 'r' }, function(err, data) {
-//         if (err)
-//         {
-//             console.log("Cannot find email password. Is it set as a Docker secret correctly?");
-
-//             throw err;
-//         }
-
-//         console.log(data)
-//         emailPassword = data
-//     });
-// }
-// else
-// {
-//     emailPassword = process.env.EMAIL_APP_PASSWORD;
-// }
-
 async function getJWTSecret() {
-    if (process.env.PRODUCTION == 'TRUE') {
+    if (process.env.MODE == 'PROD') {
         try {
             return (
                 await fs.readFile('/run/secrets/jwt-secret', 'utf8')
@@ -72,7 +29,7 @@ async function getJWTSecret() {
 }
 
 async function getEmailSecret() {
-    if (process.env.PRODUCTION == 'TRUE') {
+    if (process.env.MODE == 'PROD') {
         try {
             return (
                 await fs.readFile('/run/secrets/email-password', 'utf8')
@@ -86,11 +43,6 @@ async function getEmailSecret() {
         return process.env.EMAIL_APP_PASSWORD
     }
 }
-
-//console.log(jwtSecret)
-//console.log(emailPassword)
-
-//console.log(await getJWTSecret())
 
 module.exports = { getJWTSecret, getEmailSecret }
 

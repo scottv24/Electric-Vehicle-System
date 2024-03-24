@@ -6,7 +6,7 @@ const getAvailability = require('../services/Availability')
 
 var prisma
 
-if (process.env.PRODUCTION == 'TRUE') {
+if (process.env.MODE == 'PROD') {
     fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
         if (err) {
             console.log(

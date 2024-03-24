@@ -6,7 +6,7 @@ const Prisma = require('@prisma/client')
 const { getUserID } = require('../services/Login')
 let prisma
 
-if (process.env.PRODUCTION == 'TRUE') {
+if (process.env.MODE == 'PROD') {
     fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
         if (err) {
             console.log(
@@ -55,7 +55,7 @@ router.get('/', async function (req, res) {
         }),
     )
     queues.sort((queue1, queue2) => queue1.position - queue2.position)
-    console.log(queues)
+    //console.log(queues)
     res.json({ queues })
 })
 
@@ -200,7 +200,7 @@ async function joinQueues(req, res) {
 async function leaveQueue(req, res) {
     const { body } = req
     const { locations } = body
-    const userID = getUserID(req)
+    const userID = await getUserID(req)
     const locationsList = JSON.parse(locations)
 
     if (!locations || !userID) {
@@ -209,12 +209,31 @@ async function leaveQueue(req, res) {
 
     await prisma.queue.deleteMany({
         where: {
-            locationID: {
-                in: locationsList,
-            },
-            userID,
+            AND:[
+                { userID },
+                { locationID: { in: locationsList }},
+            ]
         },
     })
+
+    //If the user has left all queues, set their status to idle
+    const queues = await prisma.queue.findMany({
+        where: {
+            userID
+        }
+    })
+
+    if(queues.length == 0)
+    {
+        await prisma.users.update({
+            where: {
+                id: userID,
+            },
+            data: {
+                status: "IDLE",
+            }})
+    }
+
     return res.send('Complete')
 }
 

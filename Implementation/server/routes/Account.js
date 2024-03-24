@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client')
 
 var prisma = new PrismaClient();
 
-if(process.env.PRODUCTION == "TRUE")
+if(process.env.MODE == 'PROD')
 {
     fs.readFile("/run/secrets/db-url", 'utf8', function(err, data) {
         if (err) 
@@ -32,12 +32,6 @@ const { getUserID } = require('../services/Login')
 const router = express.Router()
 
 //const { sendLoginLink } = require('./mailer') //Email logic
-
-//Testing purposes only - DELETE FOR RELEASE
-router.get('/', async function (req, res) {
-    const accounts = await prisma.users.findMany()
-    res.json({ accounts })
-})
 
 router.get('/status', async function (req, res) {
     await checkUserStatus(req, res)

@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client')
 
 var prisma = new PrismaClient();
 
-if(process.env.PRODUCTION == "TRUE")
+if(process.env.MODE == 'PROD')
 {
     fs.readFile("/run/secrets/db-url", 'utf8', function(err, data) {
         if (err) 

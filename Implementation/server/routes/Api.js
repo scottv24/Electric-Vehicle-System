@@ -9,7 +9,7 @@ const { PrismaClient } = require('@prisma/client')
 
 var prisma = new PrismaClient()
 
-if (process.env.PRODUCTION == 'TRUE') {
+if (process.env.MODE == 'PROD') {
     fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
         if (err) {
             console.log(
@@ -89,6 +89,7 @@ router.get('/verify-user', async function (req, res) {
 router.get('/login-check', verifyLogin, (req, res) => res.sendStatus(200))
 
 router.get('/location/:locationID/', async function (req, res) {
+    try{
     const { params } = req
     if (params) {
         const { locationID } = params
@@ -103,6 +104,9 @@ router.get('/location/:locationID/', async function (req, res) {
         }
     }
     res.status(400).send()
+}catch(err){
+    res.status(500).send()
+}
 })
 
 module.exports = router

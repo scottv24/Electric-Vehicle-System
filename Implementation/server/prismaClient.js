@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client')
 
 let prisma
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.MODE == 'PROD') {
     prisma = new PrismaClient()
 } else {
     if (!global.prisma) {
