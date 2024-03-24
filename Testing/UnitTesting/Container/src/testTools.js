@@ -1,96 +1,40 @@
-const { joinQueue, leaveQueue, checkIn, checkOut, cancelReservation } = require('./requests')
+const { joinQueue, leaveQueue, checkIn, checkOut, cancelReservation,
+    setPermissionLevel, getAdminUsers, clearQueue, updateLocation, updateChargingPoint, deleteLocation, deleteChargingPoint } = require('./requests')
 
-module.exports = { AppendTestResults, tryJoinQueue, tryLeaveQueue, tryCheckIn, tryCheckOut, tryCancelReservation }
+module.exports = { AppendTestResults, tryRequest }
 
 function AppendTestResults(allResults, newResult)
 {
-    if(newResult.passed)
+    if(newResult.testedReq == undefined || newResult.testedReq.status == "SUCCESS")
     {
-        allResults.outputText+= "PASS"
-        allResults.successCount++
+        if(newResult.passed)
+        {
+            allResults.outputText+= "PASS"
+            allResults.successCount++
+        }
+        else
+        {
+            allResults.outputText+= "FAIL"
+            allResults.failureCount++
+        }
+
+        allResults.outputText+= "<br>" + newResult.outputText
     }
     else
     {
-        allResults.outputText+= "FAIL"
+        allResults.outputText+= "FAIL<br>" + newResult.testedReq.errorMessage + "<br>"
         allResults.failureCount++
     }
-
-    allResults.outputText+= "<br>" + newResult.outputText
 
     return allResults
 }
 
-async function tryJoinQueue(userID, locationIDs, allResults, next)
+async function tryRequest(req, allResults, assertion)
 {
-    const joinQueueRes = await joinQueue(userID, locationIDs)
+    const testedReq = await req()
 
-    if(joinQueueRes.status == "ERROR")
-    {
-        allResults.failureCount++
+    let assertionResponse = await assertion()
+    assertionResponse.testedReq = testedReq
 
-        allResults.outputText+= "FAIL"
-        allResults.outputText+= "<br>Error joining queue: " + joinQueueRes.errorMessage + "<br>"
-    }
-    
-    return await next(allResults)
-}
-
-async function tryLeaveQueue(userID, locationIDs, allResults, next)
-{
-    const leaveQueueRes = await leaveQueue(userID, locationIDs)
-
-    if(leaveQueueRes.status == "ERROR")
-    {
-        allResults.failureCount++
-
-        allResults.outputText+= "FAIL"
-        allResults.outputText+= "<br>Error leaving queue: " + leaveQueueRes.errorMessage + "<br>"
-    }
-    
-    return await next(allResults)
-}
-
-async function tryCheckIn(userID, allResults, next)
-{
-    const checkInRes = await checkIn(userID)
-
-    if(checkInRes.status == "ERROR")
-    {
-        allResults.failureCount++
-
-        allResults.outputText+= "FAIL"
-        allResults.outputText+= "<br>Error checking in: " + checkInRes.errorMessage + "<br>"
-    }
-    
-    return await next(allResults)
-}
-
-async function tryCheckOut(userID, allResults, next)
-{
-    const checkOutRes = await checkOut(userID)
-
-    if(checkOutRes.status == "ERROR")
-    {
-        allResults.failureCount++
-
-        allResults.outputText+= "FAIL"
-        allResults.outputText+= "<br>Error checking out: " + checkOutRes.errorMessage + "<br>"
-    }
-    
-    return await next(allResults)
-}
-
-async function tryCancelReservation(userID, allResults, next)
-{
-    const cancelReservationRes = await cancelReservation(userID)
-
-    if(cancelReservationRes.status == "ERROR")
-    {
-        allResults.failureCount++
-
-        allResults.outputText+= "FAIL"
-        allResults.outputText+= "<br>Error checking out: " + cancelReservationRes.errorMessage + "<br>"
-    }
-
-    return await next(allResults)
+    AppendTestResults(allResults, assertionResponse)
 }

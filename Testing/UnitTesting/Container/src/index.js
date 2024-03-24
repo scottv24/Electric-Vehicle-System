@@ -16,7 +16,8 @@ app.get('*', async function (req, res)
 
     if(testResults)
     {
-        let formattedOutput = "<h1>Test Results</h1><br><h2>Total Tests Passed: " + testResults.successCount + "<br>Total Tests Failed: " + testResults.failureCount + "</h2><br>" + testResults.outputText + "<br>"
+        let formattedOutput = "<h1>Test Results</h1><br><h2>Tests Passed: " + testResults.successCount + "/" + (testResults.successCount + testResults.failureCount)
+        + "</h2><br>" + testResults.outputText + "<br>"
 
         res.send( formattedOutput );
     }

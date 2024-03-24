@@ -30,7 +30,6 @@ async function runAllTests() {
     const testFiles = await glob(path.join(__dirname, '/tests/') + '**/*.js')
     
     let testFunctions = []
-
     testFiles.forEach((file) => Object.entries(require(file.replace('.js', ''))).map((func) => testFunctions.push(func[1])))
 
     console.log("Successfully loaded " + testFiles.length + " test files containing " + testFunctions.length + " tests: ")
@@ -41,20 +40,41 @@ async function runAllTests() {
     failureCount = 0
     outputText = ""
 
+    console.log("Resetting database before testing...")
+    await resetDatabase()
+    console.log("Database reset complete")
+    
     for(let i = 0; i < testFunctions.length; i++)
     {
-        await resetDatabase()
-
+        console.log("Running test " + (i + 1) + "/" + testFunctions.length + "...")
+        try
+        {
         result = await testFunctions[i]()
 
-        successCount+= result.successCount
-        failureCount+= result.failureCount
+        if(result.failureCount == 0)
+        {
+            successCount++
+        }
+        else
+        {
+            failureCount++
+        }
 
-        outputText+= result.outputText + "<br><br>"
+        outputText+= "<h3>" + result.name + ": " + (result.failureCount == 0 ? "PASS" : "FAIL") + "</h3>" + result.outputText + "<br><br>"
+        console.log("Test complete")
+        }
+        catch(err)
+        {
+            console.log("Error running test:\n")
+            console.log(err)
+        }
+
+        console.log("Cleaning up database...")
+        await resetDatabase()
+        console.log("Database cleanup complete")
     }
 
     console.log("Tests complete!")
-
     testResults = {successCount, failureCount, outputText}
 }
 
@@ -63,38 +83,50 @@ function getTestResults()
     return testResults
 }
 
+const connectionPool = mariadb.createPool({
+    host: process.env.DB_HOST, 
+    user: process.env.DB_USER, 
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    connectionLimit: 1,
+    multipleStatements: true 
+});
+
+let databaseSQL
+
 async function resetDatabase()
 {
     try{
-        var sql = await fs.readFile('/init-db.sql', 'utf8')
+        if(databaseSQL == undefined)
+        {
+            databaseSQL = await fs.readFile('/init-db.sql', 'utf8')
 
-        let sqlStatements = sql.split(/\r?\n/).filter((line) => !line.includes("--")).reduce((aggregation, line) => aggregation + line, "").split(';')
+            //Remove unnecesarry lines and statements
+            databaseSQL = databaseSQL.split(/\r?\n/).filter((line) => !line.includes("--"))
+            .reduce((aggregation, line) => aggregation + line, "").split(';').filter((statement) => statement.includes("INSERT") || statement.includes("AUTO_INCREMENT"))
+            .reduce((aggregation, line) => aggregation + line + ';', "")
+        }
 
-        const connectionPool = mariadb.createPool({
-            host: process.env.DB_HOST, 
-            user: process.env.DB_USER, 
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_NAME,
-            connectionLimit: 1
-        });
-
-        const connection = await connectionPool.getConnection()
-
-        const result = await connection.query("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = '" + process.env.DB_NAME + "';")
+        const databaseConnection = await connectionPool.getConnection()
         
-        await connection.query("SET FOREIGN_KEY_CHECKS=0")
-
+        //Get list of tables to be cleared
+        const result = await databaseConnection.query("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = '" + process.env.DB_NAME + "';")
+        
+        //Remove foreign key constraints
+        let allStatements = "SET FOREIGN_KEY_CHECKS=0;"
+        
+        //Aggregate statements to clear all tables
         for(let i = 0; i < result.length; i++)
         {
-            await connection.query("DROP TABLE IF EXISTS " + process.env.DB_NAME + "." + result[i].TABLE_NAME + ";")
+            allStatements+= "DELETE FROM " + process.env.DB_NAME + "." + result[i].TABLE_NAME + ";"
         }
         
-        await connection.query("SET FOREIGN_KEY_CHECKS=1")
+        //Combine statements with those required to reinsert initial data and enabling of foreign key constraints
+        allStatements+= databaseSQL + "SET FOREIGN_KEY_CHECKS=1;"
+
+        await databaseConnection.query(allStatements)
         
-        for(let i = 0; i < sqlStatements.length - 1; i++)
-        {
-            await connection.query(sqlStatements[i] + ";")
-        }
+        databaseConnection.end()
     }
     catch(err)
     {

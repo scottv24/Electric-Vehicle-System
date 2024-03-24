@@ -5,7 +5,7 @@ module.exports = { TestUserStatus, TestLocationData, TestChargerData }
 
 async function TestUserStatus(){
 
-    allResults = {outputText: "<h3>User Status Tests</h3>", successCount: 0, failureCount: 0}
+    allResults = {name: "User Status Tests", outputText: "", successCount: 0, failureCount: 0}
 
     allResults.outputText+= "<br><b>Test user 1 status: </b>"
     allResults = AppendTestResults(allResults, await AssertUserData(1, {status: "IDLE"}))
@@ -14,7 +14,7 @@ async function TestUserStatus(){
 }
 
 async function TestLocationData(){
-    allResults = {outputText: "<h3>Location Data Access Tests</h3>", successCount: 0, failureCount: 0}
+    allResults = {name: "Location Data Access Tests", outputText: "", successCount: 0, failureCount: 0}
 
     allResults.outputText+= "<br><b>Test location 1 data access: </b>"
     allResults = AppendTestResults(allResults, await AssertLocationData(1, {
@@ -29,7 +29,7 @@ async function TestLocationData(){
 }
 
 async function TestChargerData(){
-    allResults = {outputText: "<h3>Charger Data Access Tests</h3>", successCount: 0, failureCount: 0}
+    allResults = {name: "Charger Data Access Tests", outputText: "", successCount: 0, failureCount: 0}
 
     allResults.outputText+= "<br><b>Test charger 1 data access: </b>"
     allResults = AppendTestResults(allResults, await AssertChargerData(1, {

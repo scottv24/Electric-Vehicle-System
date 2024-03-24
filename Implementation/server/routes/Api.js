@@ -75,6 +75,10 @@ router.get('/location/:locationID/', async function (req, res) {
                 where: { locationID: +locationID },
                 include: { chargingPoint: true, queue: true },
             })
+
+            if(!location)
+                res.status(404).send()
+
             location.queue = location.queue.length
             location.availability = getAvailability(location.chargingPoint)
             return res.json({ location })

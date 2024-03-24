@@ -1,9 +1,15 @@
-const { getUserData, getLocationData, getAllChargerData, getChargerData, getQueueData } = require('./requests')
+const { getUserData, getLocationData, getAllChargerData, getChargerData, getQueueData, getAdminUsers } = require('./requests')
 
-module.exports = { AssertHTTPResponse, AssertUserData, AssertLocationData, AssertChargerData, AssertQueueData, AssertUserChargerData, CompoundAssertion, AssertUserChargerQueueData }
+module.exports = { AssertHTTPResponse, AssertUserData, AssertLocationData, AssertChargerData, AssertQueueData, AssertAdminUserData,
+    AssertUserChargerData, CompoundAssertion, AssertUserChargerQueueData }
 
 function EvaluateExpectedResults(actual, expected)
 {
+    if(expected === actual)
+    {
+        return true
+    }
+
     passed = true
 
     Object.keys(expected).forEach((field) => {
@@ -20,6 +26,11 @@ function EvaluateExpectedResults(actual, expected)
 
 function SelectObjectFields(targetFields, input)
 {
+    if(!targetFields)
+    {
+        return undefined
+    }
+
     let outputObject = {}
 
     Object.keys(targetFields).forEach((field) => {
@@ -200,6 +211,9 @@ async function AssertQueueData(userID, expected){
     try {
         res = await getQueueData(userID)
 
+        expected = expected.sort((a, b) => a.locationID > b.locationID)
+        res.data.queues = res.data.queues.sort((a, b) => a.locationID > b.locationID)
+
         if(res.status == "SUCCESS" && expected.length == res.data.queues.length && 
         (expected.length == 0 || expected.map((exp, i) => EvaluateExpectedResults(res.data.queues[i], exp)).reduce((allTrue, current) => allTrue && current, true)))
         {
@@ -212,9 +226,12 @@ async function AssertQueueData(userID, expected){
             outputText+= "Failure"
         }
 
-        const formattedQueues = expected.map((exp, i) => SelectObjectFields(exp, res.data.queues[i]))
+        const formattedQueues = res.data.queues.map((queue, i) => i < expected.length ? SelectObjectFields(expected[i], queue) : queue)
 
-        outputText+= "<br>Expected queue data: " + JSON.stringify(expected) + "<br>Actual queue data: " + JSON.stringify(formattedQueues) + "<br>"
+        const expectedString = expected.length == 0 ? "Empty" : JSON.stringify(expected)
+        const actualString = formattedQueues.length == 0 ? "Empty" : JSON.stringify(formattedQueues)
+
+        outputText+= "<br>Expected queue data: " + expectedString + "<br>Actual queue data: " + actualString + "<br>"
 
         if(res.status == "ERROR")
         {
@@ -223,6 +240,53 @@ async function AssertQueueData(userID, expected){
 
     } catch (err) {
         console.log("Failure in AssertQueueData due to error\n")
+        console.log(err)
+
+        outputText+= "Failure due to error<br>" + err + "<br>"
+    }
+
+    return {passed, outputText, res: [res]}
+}
+
+async function AssertAdminUserData(adminUserID, expected){
+    let outputText = "<b>Assert admin user data: </b>"
+
+    let passed = false
+
+    let res
+
+    try {
+        res = await getAdminUsers(adminUserID)
+
+        res.data.admins = res.data.admins.sort((a, b) => a.email.localeCompare(b.email))
+        expected = expected.sort((a, b) => a.email.localeCompare(b.email))
+
+        if(res.status == "SUCCESS" && expected.length == res.data.admins.length && 
+        (expected.length == 0 || expected.map((exp, i) => EvaluateExpectedResults(res.data.admins[i], exp)).reduce((allTrue, current) => allTrue && current, true)))
+        {
+            passed = true
+
+            outputText+= "Success"
+        }
+        else
+        {
+            outputText+= "Failure"
+        }
+
+        const formattedAdmins = expected.map((exp, i) => SelectObjectFields(exp, res.data.admins[i]))
+
+        const expectedString = expected.length == 0 ? "Empty" : JSON.stringify(expected)
+        const actualString = formattedAdmins.length == 0 ? "Empty" : JSON.stringify(formattedAdmins)
+
+        outputText+= "<br>Expected admin data: " + expectedString + "<br>Actual admin data: " + actualString + "<br>"
+
+        if(res.status == "ERROR")
+        {
+            outputText+= res.errorMessage + "<br>"
+        }
+
+    } catch (err) {
+        console.log("Failure in AssertAdminUserData due to error\n")
         console.log(err)
 
         outputText+= "Failure due to error<br>" + err + "<br>"

@@ -77,7 +77,7 @@ router.get('/get-admin-users', async function (req, res) {
     }
 })
 
-router.delete('/clear-queue', async function (req, res) {
+router.patch('/clear-queue', async function (req, res) {
     try {
         locationID = req.body.locationID
 
@@ -98,6 +98,35 @@ router.delete('/clear-queue', async function (req, res) {
                     return
                 } else {
                     throw err
+                }
+            }
+
+            //Get a list of entries for this queue
+            const queueEntries = await prisma.queue.findMany({
+                where: {
+                    locationID: locationID
+                }
+            })
+
+            //Loop through the queue entries and check if the corresponding user is only in this queue
+            //If so, set their status back to IDLE since they will be removed from the only queue they are in
+            for(let i = 0; i < queueEntries.length; i++)
+            {
+                const queuesWithUser = await prisma.queue.findMany({
+                    where: {
+                        userID: queueEntries[i].userID
+                    }
+                })
+
+                if(queuesWithUser.length == 1)
+                {
+                    await prisma.users.update({
+                        where: {
+                            id: queueEntries[i].userID,
+                        },
+                        data: {
+                            status: "IDLE",
+                        }})
                 }
             }
 
@@ -241,12 +270,12 @@ async function UpdateCharger(chargingPoint) {
     }
 }
 
-router.post('/update-charging-point', async function (req, res) {
+router.patch('/update-charging-point', async function (req, res) {
     try {
         chargingPointID = req.body.chargingPointID
         newStatus = req.body.status
         newLocationID = req.body.locationID
-
+        
         if (newStatus && newLocationID) {
             //If chargingPointID is undefined, set it to -1 so that it creates a new one
             if (!chargingPointID) {
@@ -254,7 +283,7 @@ router.post('/update-charging-point', async function (req, res) {
             }
 
             if (isNaN(chargingPointID) || isNaN(newLocationID)) {
-                return 400
+                res.sendStatus(400)
             }
 
             chargingPointID = parseInt(chargingPointID)
@@ -269,7 +298,7 @@ router.post('/update-charging-point', async function (req, res) {
                 })
             } catch (err) {
                 if (err.name == 'NotFoundError') {
-                    return 404
+                    res.sendStatus(404)
                 } else {
                     throw err
                 }
@@ -289,9 +318,9 @@ router.post('/update-charging-point', async function (req, res) {
                 },
             })
 
-            return 201
+            return res.json({ message: newChargingPoint, status: 201 })
         } else {
-            return 400
+            res.sendStatus(400)
         }
     } catch (err) {
         console.log(
@@ -299,7 +328,7 @@ router.post('/update-charging-point', async function (req, res) {
                 err,
         )
 
-        return 500
+        res.sendStatus(500)
     }
 })
 
