@@ -18,7 +18,7 @@ export default function ReportMenu({ chargers, setOpen, goBack }) {
     const [complete, setComplete] = useState('')
 
     return (
-        <Modal setOpen={setOpen} noSubmitExit={true}>
+        <>
             <FontAwesomeIcon icon={faArrowLeft} onClick={() => goBack()} />
             <div className="flex flex-col h-full">
                 {!charger ? (
@@ -141,6 +141,6 @@ export default function ReportMenu({ chargers, setOpen, goBack }) {
                     </>
                 )}
             </div>
-        </Modal>
+        </>
     )
 }

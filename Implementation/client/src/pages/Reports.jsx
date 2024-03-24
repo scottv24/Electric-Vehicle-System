@@ -29,7 +29,7 @@ export default function Reports() {
                 <Card className="min-h-[400px] p-8 grid grid-cols-1 sm:w-full w-full sm:h-auto h-full  text-left content-start">
                     {!reports && (
                         <div className="h-full w-full">
-                            <Spinner />
+                            <Spinner enabled={true} />
                         </div>
                     )}
                     {reports && reports.length > 0 && (
