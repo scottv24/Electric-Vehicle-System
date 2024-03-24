@@ -3,6 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 const cookies = require('cookie-parser')
+const { PrismaClient } = require('@prisma/client')
 
 var PORT = process.env.HOST_PORT
 
@@ -11,6 +12,40 @@ if (PORT == undefined) {
 }
 
 var fs = require('fs').promises
+const fsSync = require('fs')
+
+let prisma
+
+createPrismaClient()
+
+function createPrismaClient() {
+    if (process.env.MODE == 'PROD') {
+        try{
+            const connectionURL = fsSync.readFileSync('/run/secrets/db-url', 'utf8').replace(/(\r\n|\n|\r)/gm, '')
+
+            prisma = new PrismaClient({
+                datasources: {
+                    db: {
+                        url: connectionURL,
+                    },
+                },
+            })
+
+        } catch(err)
+        {
+            console.log("Cannot find database connection URL. Is it set as a Docker secret correctly?");
+
+            console.log(err)
+        }
+
+    } else {
+        prisma = new PrismaClient()
+    }
+}
+
+function getPrismaClient(){
+    return prisma
+}
 
 async function getJWTSecret() {
     if (process.env.MODE == 'PROD') {
@@ -44,7 +79,7 @@ async function getEmailSecret() {
     }
 }
 
-module.exports = { getJWTSecret, getEmailSecret }
+module.exports = { getJWTSecret, getEmailSecret, getPrismaClient }
 
 // const config = require('/config/config.js')
 // const SECRET = 'test'

@@ -1,32 +1,11 @@
 const express = require('express')
-var fs = require('fs')
 const router = express.Router()
-const { PrismaClient } = require('@prisma/client')
 const Prisma = require('@prisma/client')
 const { getUserID } = require('../services/Login')
-let prisma
 
-if (process.env.MODE == 'PROD') {
-    fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
-        if (err) {
-            console.log(
-                'Cannot find database connection URL. Is it set as a Docker secret correctly?',
-            )
+const { getPrismaClient } = require('../index')
 
-            throw err
-        }
-
-        prisma = new PrismaClient({
-            datasources: {
-                db: {
-                    url: data,
-                },
-            },
-        })
-    })
-} else {
-    prisma = new PrismaClient()
-}
+const prisma = getPrismaClient()
 
 router.get('/', async function (req, res) {
     const userID = await getUserID(req)
