@@ -1,32 +1,11 @@
 const express = require('express')
-var fs = require('fs')
 const router = express.Router()
-const { PrismaClient } = require('@prisma/client')
 const Prisma = require('@prisma/client')
 const { getUserID } = require('../services/Login')
-let prisma
 
-if (process.env.PRODUCTION == 'TRUE') {
-    fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
-        if (err) {
-            console.log(
-                'Cannot find database connection URL. Is it set as a Docker secret correctly?',
-            )
+const { getPrismaClient } = require('../index')
 
-            throw err
-        }
-
-        prisma = new PrismaClient({
-            datasources: {
-                db: {
-                    url: data,
-                },
-            },
-        })
-    })
-} else {
-    prisma = new PrismaClient()
-}
+const prisma = getPrismaClient()
 
 router.get('/', async function (req, res) {
     const userID = await getUserID(req)
@@ -55,7 +34,7 @@ router.get('/', async function (req, res) {
         }),
     )
     queues.sort((queue1, queue2) => queue1.position - queue2.position)
-    console.log(queues)
+    //console.log(queues)
     res.json({ queues })
 })
 
@@ -200,7 +179,7 @@ async function joinQueues(req, res) {
 async function leaveQueue(req, res) {
     const { body } = req
     const { locations } = body
-    const userID = getUserID(req)
+    const userID = await getUserID(req)
     const locationsList = JSON.parse(locations)
 
     if (!locations || !userID) {
@@ -209,12 +188,31 @@ async function leaveQueue(req, res) {
 
     await prisma.queue.deleteMany({
         where: {
-            locationID: {
-                in: locationsList,
-            },
-            userID,
+            AND:[
+                { userID },
+                { locationID: { in: locationsList }},
+            ]
         },
     })
+
+    //If the user has left all queues, set their status to idle
+    const queues = await prisma.queue.findMany({
+        where: {
+            userID
+        }
+    })
+
+    if(queues.length == 0)
+    {
+        await prisma.users.update({
+            where: {
+                id: userID,
+            },
+            data: {
+                status: "IDLE",
+            }})
+    }
+
     return res.send('Complete')
 }
 

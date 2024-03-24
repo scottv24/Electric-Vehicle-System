@@ -1,41 +1,14 @@
 const express = require('express')
-var fs = require('fs')
-const { PrismaClient } = require('@prisma/client')
 
-var prisma = new PrismaClient()
+const { getPrismaClient } = require('../index')
 
-if (process.env.PRODUCTION == 'TRUE') {
-    fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
-        if (err) {
-            console.log(
-                'Cannot find database connection URL. Is it set as a Docker secret correctly?',
-            )
+const prisma = getPrismaClient()
 
-            throw err
-        }
-
-        prisma = new PrismaClient({
-            datasources: {
-                db: {
-                    url: data,
-                },
-            },
-        })
-    })
-} else {
-    prisma = new PrismaClient()
-}
 const { getUserID } = require('../services/Login')
 
 const router = express.Router()
 
 //const { sendLoginLink } = require('./mailer') //Email logic
-
-//Testing purposes only - DELETE FOR RELEASE
-router.get('/', async function (req, res) {
-    const accounts = await prisma.users.findMany()
-    res.json({ accounts })
-})
 
 router.get('/status', async function (req, res) {
     await checkUserStatus(req, res)

@@ -1,32 +1,9 @@
 const express = require('express')
-var fs = require('fs')
-const { PrismaClient } = require('@prisma/client')
-const jwt = require('jsonwebtoken')
 const getAvailability = require('../services/Availability')
 
-var prisma
+const { getPrismaClient } = require('../index')
 
-if (process.env.PRODUCTION == 'TRUE') {
-    fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
-        if (err) {
-            console.log(
-                'Cannot find database connection URL. Is it set as a Docker secret correctly?',
-            )
-
-            throw err
-        }
-
-        prisma = new PrismaClient({
-            datasources: {
-                db: {
-                    url: data,
-                },
-            },
-        })
-    })
-} else {
-    prisma = new PrismaClient()
-}
+const prisma = getPrismaClient()
 
 const router = express.Router()
 

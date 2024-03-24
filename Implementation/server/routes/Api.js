@@ -4,34 +4,9 @@ const { verifyLogin } = require('../middleware/verifyLogin')
 const { CheckUser, Login, CreateUser } = require('../services/Login')
 const jwt = require('jsonwebtoken')
 
-var fs = require('fs')
-const { PrismaClient } = require('@prisma/client')
+const { getJWTSecret, getPrismaClient } = require('../index')
 
-var prisma = new PrismaClient()
-
-if (process.env.PRODUCTION == 'TRUE') {
-    fs.readFile('/run/secrets/db-url', 'utf8', function (err, data) {
-        if (err) {
-            console.log(
-                'Cannot find database connection URL. Is it set as a Docker secret correctly?',
-            )
-
-            throw err
-        }
-
-        prisma = new PrismaClient({
-            datasources: {
-                db: {
-                    url: data,
-                },
-            },
-        })
-    })
-} else {
-    prisma = new PrismaClient()
-}
-
-const { getJWTSecret } = require('../index')
+const prisma = getPrismaClient()
 
 // Import nested routes
 const chargerRoutes = require('./Chargers')
@@ -91,6 +66,7 @@ router.get('/login-check', verifyLogin, (req, res) => res.sendStatus(200))
 router.get('/admin-check', verifyAdmin, (req, res) => res.sendStatus(200))
 
 router.get('/location/:locationID/', async function (req, res) {
+    try{
     const { params } = req
     if (params) {
         const { locationID } = params
@@ -105,6 +81,9 @@ router.get('/location/:locationID/', async function (req, res) {
         }
     }
     res.status(400).send()
+}catch(err){
+    res.status(500).send()
+}
 })
 
 module.exports = router

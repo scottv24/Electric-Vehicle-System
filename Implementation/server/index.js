@@ -3,6 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 const cookies = require('cookie-parser')
+const { PrismaClient } = require('@prisma/client')
 
 var PORT = process.env.HOST_PORT
 
@@ -11,52 +12,43 @@ if (PORT == undefined) {
 }
 
 var fs = require('fs').promises
+const fsSync = require('fs')
 
-// var jwtSecret;
+let prisma
 
-// if(process.env.PRODUCTION == "TRUE")
-// {
-//     fs.readFileSync("/run/secrets/jwt-secret", { encoding: 'utf8', flag: 'r' }, function(err, data) {
-//         if (err)
-//         {
-//             console.log("Cannot find JWT secret. Is it set as a Docker secret correctly?");
+createPrismaClient()
 
-//             throw err;
-//         }
+function createPrismaClient() {
+    if (process.env.MODE == 'PROD') {
+        try{
+            const connectionURL = fsSync.readFileSync('/run/secrets/db-url', 'utf8').replace(/(\r\n|\n|\r)/gm, '')
 
-//         console.log(data)
+            prisma = new PrismaClient({
+                datasources: {
+                    db: {
+                        url: connectionURL,
+                    },
+                },
+            })
 
-//         jwtSecret = data
-//     });
-// }
-// else
-// {
-//     jwtSecret = process.env.JWT_SECRET;
-// }
+        } catch(err)
+        {
+            console.log("Cannot find database connection URL. Is it set as a Docker secret correctly?");
 
-// var emailPassword;
+            console.log(err)
+        }
 
-// if(process.env.PRODUCTION == "TRUE")
-// {
-//     fs.readFileSync("/run/secrets/email-password", { encoding: 'utf8', flag: 'r' }, function(err, data) {
-//         if (err)
-//         {
-//             console.log("Cannot find email password. Is it set as a Docker secret correctly?");
+    } else {
+        prisma = new PrismaClient()
+    }
+}
 
-//             throw err;
-//         }
-
-//         console.log(data)
-//         emailPassword = data
-//     });
-// }
-// else
-// {
-//     emailPassword = process.env.EMAIL_APP_PASSWORD;
-// }
+function getPrismaClient(){
+    return prisma
+}
 
 async function getJWTSecret() {
-    if (process.env.PRODUCTION == 'TRUE') {
+    if (process.env.MODE == 'PROD') {
         try {
             return (
                 await fs.readFile('/run/secrets/jwt-secret', 'utf8')
@@ -72,7 +64,7 @@ async function getJWTSecret() {
 }
 
 async function getEmailSecret() {
-    if (process.env.PRODUCTION == 'TRUE') {
+    if (process.env.MODE == 'PROD') {
         try {
             return (
                 await fs.readFile('/run/secrets/email-password', 'utf8')
@@ -87,12 +79,7 @@ async function getEmailSecret() {
     }
 }
 
-//console.log(jwtSecret)
-//console.log(emailPassword)
-
-//console.log(await getJWTSecret())
-
-module.exports = { getJWTSecret, getEmailSecret }
+module.exports = { getJWTSecret, getEmailSecret, getPrismaClient }
 
 // const config = require('/config/config.js')
 // const SECRET = 'test'

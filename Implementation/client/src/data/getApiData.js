@@ -3,10 +3,8 @@ import { backendURL } from '../Env'
 
 export default async function getApiData(route) {
     try {
-        //`${window.location.origin.toString()}/hwcharging/api/${route}/`
         const url = `${backendURL}/api/${route}/`
         const resp = await axios.get(
-            //`http://localhost:3000/api/${route}/`,
             url,
             {
                 withCredentials: true,
