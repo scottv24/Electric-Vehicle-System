@@ -39,6 +39,7 @@ const accountRoutes = require('./Account')
 const adminRoutes = require('./Admin')
 const queueRoutes = require('./Queues')
 const getAvailability = require('../services/Availability')
+const { verifyAdmin } = require('../middleware/verifyAdmin')
 
 // Set up standard root response
 router.get('/', (req, res) => {
@@ -48,7 +49,7 @@ router.get('/', (req, res) => {
 // Use imported routes
 router.use('/chargers', verifyLogin, chargerRoutes)
 router.use('/account', verifyLogin, accountRoutes)
-router.use('/admin', verifyLogin, adminRoutes)
+router.use('/admin', verifyAdmin, adminRoutes)
 router.use('/queues', verifyLogin, queueRoutes)
 
 router.post('/login', async function (req, res) {
@@ -87,6 +88,7 @@ router.get('/verify-user', async function (req, res) {
 })
 
 router.get('/login-check', verifyLogin, (req, res) => res.sendStatus(200))
+router.get('/admin-check', verifyAdmin, (req, res) => res.sendStatus(200))
 
 router.get('/location/:locationID/', async function (req, res) {
     try{

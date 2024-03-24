@@ -32,6 +32,8 @@ const router = express.Router()
 
 router.get('/', getChargers)
 
+router.patch('/update-charger', updateCharger)
+
 async function getChargers(req, res) {
     const chargers = await prisma.location.findMany({
         include: { chargingPoint: true, queue: true },
@@ -42,6 +44,29 @@ async function getChargers(req, res) {
     })
 
     res.json({ chargers })
+}
+
+async function updateCharger(req, res) {
+    try {
+        const { chargingPointID, status, message } = req.body
+        if (!message && status !== 'BROKEN') {
+            await prisma.chargingPoint.update({
+                where: { chargingPointID },
+                data: {
+                    status,
+                },
+            })
+        } else {
+            await prisma.report.create({
+                data: { chargingPointID, message },
+            })
+        }
+        return res.sendStatus(200)
+    } catch (err) {
+        console.log('Error updating charger.')
+        console.log(err)
+        return res.sendStatus(500)
+    }
 }
 
 async function getCharger() {

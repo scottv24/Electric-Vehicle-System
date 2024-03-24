@@ -2,34 +2,38 @@ import MainBody from '../components/MainBody'
 import Navbar from '../components/Navbar'
 import Card from '../components/Card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPen } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import { findManyChargeLocations } from '../dummyData/BackendData'
 import Spinner from '../components/Spinner'
 import getApiData from '../data/getApiData'
+import AdminTable from '../components/AdminTable'
+import Axios from 'axios'
+import ManageLocation from '../components/ManageLocation'
+import AddLocationMenu from '../components/AddLocation'
 
 export default function Admin() {
     const [chargeLocations, setChargeLocations] = useState(null)
-
+    const [selectedLocation, setSelectedLocation] = useState(null)
+    const [adding, setAdding] = useState(null)
+    const [selectedLocCopy, setSelectedLocCopy] = useState({})
+    const [updated, setUpdated] = useState(true)
+    const [deletionConfirm, setDeletionConfirm] = useState(false)
     useEffect(() => {
-        //TODO: Replace with API call to get charge locations - could be done on time interval?
-        /* const chargeLocationDummy = findManyChargeLocations
-
-        setTimeout(function () {
-            setChargeLocations(chargeLocationDummy)
-        }, 1000)*/
-
         async function getChargers() {
             const { chargers } = await getApiData('chargers')
             if (chargers) {
-                console.log(chargers)
                 setChargeLocations(chargers)
             }
         }
-        getChargers()
-    }, [])
-
-    console.log('test')
+        if (!updated) {
+            getChargers()
+        } else {
+            setUpdated(false)
+        }
+    }, [updated])
+    //todo need to setAdding(false) somewhere so location adding function is not visable after clicking location but i dont know how to do x&y condition for rendering with shorthand notation
     return (
         <div className="w-full flex bg-bg">
             <Navbar active={'Chargers'} type="admin" />
@@ -45,49 +49,71 @@ export default function Admin() {
                                     Map View
                                 </button>
                             </div>
-                            <div className="p-4 grid grid-cols-4  gap-20">
-                                <h1 className=" col-span-3 row-start-1 text-3xl font-bold flex justify-left items-center">
-                                    Charging Locations
-                                </h1>
-                                <div className=" w-full  col-start-4 flex items-center">
-                                    <button className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right">
-                                        Edit
-                                        <FontAwesomeIcon
-                                            icon={faPen}
-                                            className="ml-2"
-                                        />
-                                    </button>
+                            <div className="p-4  grid-cols-4 h-full">
+                                <div className="flex">
+                                    <h1 className="w-full col-span-3 mt-0 text-3xl font-bold flex justify-left items-center">
+                                        Charging Locations
+                                    </h1>
+                                    <div className=" w-full flex items-center">
+                                        {selectedLocation ? (
+                                            <button
+                                                className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right"
+                                                onClick={() => {
+                                                    setSelectedLocation(null)
+                                                }}
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={faArrowLeft}
+                                                />{' '}
+                                                Back
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right"
+                                                onClick={() => {
+                                                    setSelectedLocation(null)
+                                                    setAdding(true)
+                                                }}
+                                            >
+                                                Add{' '}
+                                                <FontAwesomeIcon
+                                                    icon={faPlus}
+                                                />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
-                                <table className="divide-y divide-solid table-auto col-span-full">
-                                    <thead>
-                                        <tr>
-                                            <th className="text-left px-4 py-2">
-                                                Location
-                                            </th>
-                                            <th className="px-4 py-2">
-                                                No. Chargers
-                                            </th>
-                                            <th className="px-4 py-2 md:table-cell hidden">
-                                                Available
-                                            </th>
-                                            <th className="px-4 py-2 md:table-cell hidden">
-                                                In Queue
-                                            </th>
-                                            <th className="px-4 py-2 md:table-cell hidden">
-                                                Broken
-                                            </th>
-                                            <th className="px-4 py-2 md:table-cell hidden">
-                                                Wattage
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-solid">
-                                        {chargeLocations.map((location) => (
-                                            <Locations location={location} />
-                                        ))}
-                                    </tbody>
-                                </table>
+                                {!selectedLocation ? (
+                                    <AdminTable
+                                        chargeLocations={chargeLocations}
+                                        setSelectedLocation={
+                                            setSelectedLocation
+                                        }
+                                        selectedLocation={selectedLocation}
+                                    ></AdminTable>
+                                ) : (
+                                    <ManageLocation
+                                        DeleteLocation={DeleteLocation}
+                                        deletionConfirm={deletionConfirm}
+                                        selectedLocation={selectedLocation}
+                                        setDeletionConfirm={setDeletionConfirm}
+                                        setSelectedLocCopy={setSelectedLocCopy}
+                                        setSelectedLocation={
+                                            setSelectedLocation
+                                        }
+                                        setUpdated={setUpdated}
+                                        updateFunction={updateFunction}
+                                        selectedLocCopy={selectedLocCopy}
+                                    />
+                                )}
+                                {adding ? (
+                                    <AddLocationMenu
+                                        AddLocation={AddLocation}
+                                        setAdding={setAdding}
+                                        setUpdated={setUpdated}
+                                    />
+                                ) : null}
                             </div>
                         </Card>
                     )
@@ -96,27 +122,68 @@ export default function Admin() {
         </div>
     )
 }
-function Locations({ location }) {
-    const { name, chargingPoint, queue, wattage } = location
-    const numChargers = chargingPoint.length
-    const available = chargingPoint.filter(
-        (charger) => charger.status === 'IDLE'
+
+async function updateFunction(location) {
+    try {
+        if (location) {
+            const response = await Axios.patch(
+                'http://localhost:3000/api/admin/update-location',
+                location,
+                {
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': '1',
+                    },
+                }
+            )
+            window.location.reload()
+        } else {
+            console.log('No changes made')
+        }
+    } catch (err) {
+        return
+    }
+}
+
+async function DeleteChargePoint(body) {
+    const response = await Axios.delete(
+        'http://localhost:3000/api/admin/delete-charging-point',
+        { data: body }
     )
-    const broken = chargingPoint.filter(
-        (charger) => charger.status === 'BROKEN'
+}
+
+async function DeleteLocation(body) {
+    //TODO havent tested but i assume this works
+    const response = await Axios.delete(
+        'http://localhost:3000/api/admin/delete-location',
+        { data: body }
     )
-    return (
-        <tr className="divide-solid bg-bg2 p-4">
-            <td className="p-10">{name}</td>
-            <td className="text-center">{numChargers}</td>
-            <td className="md:table-cell hidden text-center">
-                {available.length}
-            </td>
-            <td className="md:table-cell hidden text-center">{queue.length}</td>
-            <td className="md:table-cell hidden text-center">
-                {broken.length}
-            </td>
-            <td className="md:table-cell hidden text-center">{wattage}kWh</td>
-        </tr>
-    )
+}
+
+async function AddLocation(name, wattage, lat, lng, noChargers) {
+    try {
+        const body = {
+            name,
+            wattage,
+            lat,
+            lng,
+            noChargers,
+            chargingPoint: [],
+        }
+        const response = await Axios.patch(
+            'http://localhost:3000/api/admin/update-location',
+            body,
+            {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': '1',
+                },
+            }
+        )
+        window.location.reload()
+    } catch (err) {
+        return
+    }
 }

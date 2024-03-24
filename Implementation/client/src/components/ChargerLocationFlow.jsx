@@ -11,8 +11,9 @@ import Spinner from './Spinner'
 import StatusInfo from './PendingInfo'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
- 
-export default function ChargerModal({ location, setOpen }) {
+import ReportMenu from './ReportMenu'
+
+export default function ChargerLocationFlow({ location, setOpen }) {
     const { id } = useParams()
     const [locationInfo, setLocationInfo] = useState(null)
     const [loggedOut, setLoggedOut] = useState(false)
@@ -21,18 +22,18 @@ export default function ChargerModal({ location, setOpen }) {
     const [chargerLocationID, setChargerLocationID] = useState(null)
     const [failure, setFail] = useState(false)
     const [joinedQueue, setJoined] = useState(false)
- 
+
     useEffect(() => {
         const getLocation = async () => {
             const { location } = await getApiData(`location/${id}`)
             setLocationInfo(location)
         }
- 
+
         const checkLoggedOut = async () => {
             const loggedOut = await loggedInCheck(true)
             setLoggedOut(loggedOut)
         }
- 
+
         if (!location) {
             getLocation()
         } else {
@@ -40,7 +41,7 @@ export default function ChargerModal({ location, setOpen }) {
         }
         checkLoggedOut()
     }, [])
- 
+
     async function queue(locations) {
         const { chargerLocationID, chargingPointID, failure } = await joinQueue(
             locations
@@ -58,13 +59,22 @@ export default function ChargerModal({ location, setOpen }) {
             setChargerLocationID(chargerLocationID)
         }
     }
- 
+
     if (action === 'RESERVE' || (action === 'QUEUE' && !loggedOut)) {
         queue([locationInfo.locationID])
     }
- 
+
+    if (locationInfo && action === 'UPDATE') {
+        return (
+            <ReportMenu
+                chargers={locationInfo.chargingPoint}
+                setOpen={setOpen}
+                goBack={() => setAction(null)}
+            />
+        )
+    }
     return (
-        <Modal setOpen={setOpen} noSubmitExit={true}>
+        <>
             {!action && (
                 <LocationInfo
                     location={locationInfo}
@@ -129,6 +139,6 @@ export default function ChargerModal({ location, setOpen }) {
                     </p>
                 </div>
             )}
-        </Modal>
+        </>
     )
 }

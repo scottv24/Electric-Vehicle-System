@@ -7,7 +7,8 @@ import SwipeClose from './SwipeClose'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons'
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
-import ChargerModal from './ChargerModal'
+import ChargerLocationFlow from './ChargerLocationFlow'
+import Modal from './Modal'
 
 export default function LocationCard({
     location,
@@ -100,10 +101,12 @@ export default function LocationCard({
                 />
             </div>
             {modalOpen && (
-                <ChargerModal
-                    location={location}
-                    setOpen={() => setModalOpen(false)}
-                />
+                <Modal setOpen={setModalOpen} noSubmitExit={true}>
+                    <ChargerLocationFlow
+                        location={location}
+                        setOpen={setModalOpen}
+                    />
+                </Modal>
             )}
         </>
     )

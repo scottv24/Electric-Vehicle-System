@@ -11,20 +11,19 @@ model chargingPoint {
   chargingPointID Int                   @id @default(autoincrement())
   status          chargingPoint_status?
   locationID      Int?
-  location        location?             @relation(fields: [locationID], references: [locationID], onDelete: Cascade, map: "chargingPoint_ibfk_1")
+  location        location?             @relation(fields: [locationID], references: [locationID], onDelete: Cascade, map: "charging_point_location_fk")
+  report          report[]
   users           users[]
 
   @@index([locationID], map: "charging_point_location_fk")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model keyValues {
-  maximumPendingTime DateTime @db.Time(0)
-  maximumChargeTime  DateTime @db.Time(0)
-  checkQueueInterval DateTime @db.Time(0)
+  maximumPendingTime Int
+  maximumChargeTime  Int
+  checkQueueInterval Int
 
   @@id([maximumPendingTime, maximumChargeTime, checkQueueInterval])
-  @@ignore
 }
 
 model location {
@@ -41,11 +40,21 @@ model queue {
   locationID     Int
   userID         Int
   queueEntryTime DateTime @default(now()) @db.Timestamp(0)
-  location       location @relation(fields: [locationID], references: [locationID], onDelete: Cascade, map: "queue_ibfk_2")
-  users          users    @relation(fields: [userID], references: [id], onDelete: Cascade, map: "queue_ibfk_1")
+  location       location @relation(fields: [locationID], references: [locationID], onDelete: Cascade, map: "queue_location_fk")
+  users          users    @relation(fields: [userID], references: [id], onDelete: Cascade, map: "queue_users_fk")
 
   @@id([locationID, userID])
   @@index([userID], map: "queue_users_fk")
+}
+
+model report {
+  reportID        Int           @id @default(autoincrement())
+  chargingPointID Int
+  message         String?       @db.VarChar(250)
+  reportTime      DateTime      @default(now()) @db.Timestamp(0)
+  chargingPoint   chargingPoint @relation(fields: [chargingPointID], references: [chargingPointID], onDelete: Cascade, map: "charging_point_report_fk")
+
+  @@index([chargingPointID], map: "charging_point_report_fk")
 }
 
 model users {
@@ -53,12 +62,19 @@ model users {
   email            String?                @db.VarChar(255)
   permissionLevel  users_permissionLevel? @default(USER)
   status           users_status?          @default(IDLE)
-  pendingStartTime DateTime               @default(now()) @db.Timestamp(0)
+  pendingStartTime DateTime?              @db.Timestamp(0)
   chargePointID    Int?
   queue            queue[]
-  chargingPoint    chargingPoint?         @relation(fields: [chargePointID], references: [chargingPointID], onDelete: Cascade, map: "users_ibfk_1")
+  chargingPoint    chargingPoint?         @relation(fields: [chargePointID], references: [chargingPointID], onDelete: Cascade, map: "user_chargePoint_fk")
 
   @@index([chargePointID], map: "user_chargePoint_fk")
+}
+
+enum chargingPoint_status {
+  IDLE
+  BROKEN
+  CHARGING
+  RESERVED
 }
 
 enum users_permissionLevel {
@@ -72,11 +88,4 @@ enum users_status {
   CHARGING
   IDLE
   PENDING
-}
-
-enum chargingPoint_status {
-  IDLE
-  BROKEN
-  CHARGING
-  RESERVED
 }

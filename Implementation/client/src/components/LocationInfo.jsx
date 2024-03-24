@@ -9,6 +9,7 @@ import {
     faUserPlus,
 } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
+import ChargerStatusGrid from './ChargerStatusGrid'
 
 export default function LocationInfo({ className, location, setAction }) {
     const [expandChargers, setExpandChargers] = useState(false)
@@ -39,38 +40,7 @@ export default function LocationInfo({ className, location, setAction }) {
                 </p>
                 {expandChargers && (
                     <div className="col-span-2 bg-gray bg-opacity-20">
-                        <div className=" grid grid-cols-2 text-base ">
-                            {location.chargingPoint.map((charger, i) => {
-                                let status, color
-                                if (charger.status === 'IDLE') {
-                                    status = 'Available'
-                                } else if (charger.status === 'BROKEN') {
-                                    status = 'Broken'
-                                } else {
-                                    status = 'In Use'
-                                }
-
-                                return (
-                                    <>
-                                        <p className="font-light ">
-                                            Charger {i + 1}
-                                        </p>
-                                        <p
-                                            className={`font-semibold ${
-                                                charger.status === 'IDLE'
-                                                    ? 'text-accent'
-                                                    : charger.status ===
-                                                      'BROKEN'
-                                                    ? 'text-red'
-                                                    : 'text-unavailable'
-                                            }`}
-                                        >
-                                            {status}
-                                        </p>
-                                    </>
-                                )
-                            })}
-                        </div>
+                        <ChargerStatusGrid chargers={location.chargingPoint} />
                     </div>
                 )}
                 <p>Charger Speed</p>
@@ -92,15 +62,20 @@ export default function LocationInfo({ className, location, setAction }) {
                         Reserve Charger <FontAwesomeIcon icon={faUserClock} />
                     </Button>
                 ) : (
-                    <Button
-                        className="my-2"
-                        color="BLUE"
-                        onClick={() => {
-                            setAction('QUEUE')
-                        }}
-                    >
-                        Join Queue <FontAwesomeIcon icon={faUserPlus} />
-                    </Button>
+                    <>
+                        {location.availability.broken !==
+                            location.availability.numChargers && (
+                            <Button
+                                className="my-2"
+                                color="BLUE"
+                                onClick={() => {
+                                    setAction('QUEUE')
+                                }}
+                            >
+                                Join Queue <FontAwesomeIcon icon={faUserPlus} />
+                            </Button>
+                        )}
+                    </>
                 )}
 
                 <Button

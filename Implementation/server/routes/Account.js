@@ -2,7 +2,7 @@ const express = require('express')
 var fs = require('fs')
 const { PrismaClient } = require('@prisma/client')
 
-var prisma = new PrismaClient();
+var prisma = new PrismaClient()
 
 if(process.env.MODE == 'PROD')
 {
@@ -11,21 +11,19 @@ if(process.env.MODE == 'PROD')
         {
             console.log("Cannot find database connection URL. Is it set as a Docker secret correctly?");
 
-            throw err;
+            throw err
         }
 
         prisma = new PrismaClient({
             datasources: {
-            db: {
+                db: {
                     url: data,
                 },
             },
-        });
-    });
-}
-else
-{
-    prisma = new PrismaClient();
+        })
+    })
+} else {
+    prisma = new PrismaClient()
 }
 const { getUserID } = require('../services/Login')
 
@@ -61,6 +59,33 @@ async function checkUserStatus(req, res) {
         body.location = prevChargers[0].location.name
     }
     return res.json(body)
+}
+
+router.patch('/logout', logOut)
+router.patch('/delete-account', deleteAccount)
+
+async function logOut(req, res) {
+    try {
+        res.clearCookie('token')
+        res.status(200)
+        res.send()
+    } catch (err) {
+        console.log('Error logging out.')
+        res.sendStatus(500)
+    }
+}
+
+async function deleteAccount(req, res) {
+    try {
+        const id = await getUserID(req)
+        await prisma.users.delete({
+            where: { id },
+        })
+        res.sendStatus(200)
+    } catch (err) {
+        console.log('Error deleting account.')
+        res.sendStatus(500)
+    }
 }
 
 // crypto.subtle

@@ -4,10 +4,12 @@ import Chargers from './pages/Chargers'
 import Page from './pages/Page'
 import Admin from './pages/Admin'
 import AdminConsole from './pages/AdminConsole'
-import Dashboard from './pages/Dashboard'
+import Reports from './pages/Reports'
 import Queues from './pages/Queues'
-import ChargerModal from './components/ChargerModal'
+import ChargerLocationFlow from './components/ChargerLocationFlow'
+import Map from './components/Map'
 import { rootURL } from './Env'
+import Profile from './pages/Profile'
 
 export default function App() {
     return (
@@ -33,11 +35,11 @@ export default function App() {
                     }
                 />
                 <Route
-                    path="/Dashboard"
+                    path="/Reports"
                     element={
                         <Page>
                             {' '}
-                            <Dashboard />
+                            <Reports />
                         </Page>
                     }
                 />
@@ -60,13 +62,21 @@ export default function App() {
                 <Route
                     path="/charger/:id"
                     element={
-                        <ChargerModal
+                        <ChargerLocationFlow
                             setOpen={(open) => {
                                 if (!open) {
                                     window.location.replace(rootURL)
                                 }
                             }}
                         />
+                    }
+                />
+                <Route
+                    path="profile"
+                    element={
+                        <Page>
+                            <Profile />
+                        </Page>
                     }
                 />
             </Routes>
