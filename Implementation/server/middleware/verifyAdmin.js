@@ -45,6 +45,7 @@ async function verifyAdmin(req, res, next) {
             return res.sendStatus(403)
         }
     } catch (err) {
+        console.log(err)
         res.status(403)
         res.send()
     }

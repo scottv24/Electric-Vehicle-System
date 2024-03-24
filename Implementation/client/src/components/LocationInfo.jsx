@@ -62,15 +62,20 @@ export default function LocationInfo({ className, location, setAction }) {
                         Reserve Charger <FontAwesomeIcon icon={faUserClock} />
                     </Button>
                 ) : (
-                    <Button
-                        className="my-2"
-                        color="BLUE"
-                        onClick={() => {
-                            setAction('QUEUE')
-                        }}
-                    >
-                        Join Queue <FontAwesomeIcon icon={faUserPlus} />
-                    </Button>
+                    <>
+                        {location.availability.broken !==
+                            location.availability.numChargers && (
+                            <Button
+                                className="my-2"
+                                color="BLUE"
+                                onClick={() => {
+                                    setAction('QUEUE')
+                                }}
+                            >
+                                Join Queue <FontAwesomeIcon icon={faUserPlus} />
+                            </Button>
+                        )}
+                    </>
                 )}
 
                 <Button

@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import ReportMenu from './ReportMenu'
 
-export default function ChargerModal({ location, setOpen }) {
+export default function ChargerLocationFlow({ location, setOpen }) {
     const { id } = useParams()
     const [locationInfo, setLocationInfo] = useState(null)
     const [loggedOut, setLoggedOut] = useState(false)
@@ -74,7 +74,7 @@ export default function ChargerModal({ location, setOpen }) {
         )
     }
     return (
-        <Modal setOpen={setOpen} noSubmitExit={true}>
+        <>
             {!action && (
                 <LocationInfo
                     location={locationInfo}
@@ -139,6 +139,6 @@ export default function ChargerModal({ location, setOpen }) {
                     </p>
                 </div>
             )}
-        </Modal>
+        </>
     )
 }

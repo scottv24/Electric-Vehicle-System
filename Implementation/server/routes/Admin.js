@@ -169,9 +169,9 @@ router.patch('/update-location', async function (req, res) {
             }
 
             locationID = parseInt(locationID)
-            wattage = parseInt(wattage)
-            lat = parseInt(lat)
-            lng = parseInt(lng)
+            wattage = +wattage
+            lat = +lat
+            lng = +lng
             const newLocation = await prisma.location.upsert({
                 where: {
                     locationID: locationID,
@@ -373,7 +373,7 @@ router.delete('/delete-charging-point', async function (req, res) {
         chargingPointID = req.body.chargingPointID
 
         if (chargingPointID && !isNaN(chargingPointID)) {
-            chargingPointID = parseInt(chargingPointID)
+            chargingPointID = +chargingPointID
 
             //Check charging point exists
             try {

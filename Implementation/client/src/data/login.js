@@ -56,3 +56,42 @@ export async function adminCheck(stopRedirect) {
         return
     }
 }
+
+export async function logout() {
+    try {
+        await axios.patch(
+            `${backendURL}/api/account/logout`,
+            {},
+            {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': '1',
+                },
+            }
+        )
+        window.location.replace(frontendURL)
+        return
+    } catch (err) {
+        return false
+    }
+}
+
+export async function deleteAccount() {
+    try {
+        await axios.patch(
+            `${backendURL}/api/account/delete-account`,
+            {},
+            {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': '1',
+                },
+            }
+        )
+        window.location.replace(frontendURL)
+    } catch (err) {
+        return false
+    }
+}

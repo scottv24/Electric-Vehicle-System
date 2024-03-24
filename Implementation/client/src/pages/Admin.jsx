@@ -10,6 +10,8 @@ import Spinner from '../components/Spinner'
 import getApiData from '../data/getApiData'
 import AdminTable from '../components/AdminTable'
 import Axios from 'axios'
+import ManageLocation from '../components/ManageLocation'
+import AddLocationMenu from '../components/AddLocation'
 
 export default function Admin() {
     const [chargeLocations, setChargeLocations] = useState(null)
@@ -91,307 +93,26 @@ export default function Admin() {
                                         selectedLocation={selectedLocation}
                                     ></AdminTable>
                                 ) : (
-                                    <div className="col-span-full xl:px-[10%] text-xl p-3 flex flex-col justify-between h-full ">
-                                        <div className="flex justify-between">
-                                            <input
-                                                value={selectedLocation.name}
-                                                onChange={(value) => {
-                                                    selectedLocation.name =
-                                                        value
-                                                }}
-                                            />
-                                            {!deletionConfirm ? (
-                                                <button
-                                                    className="bg-red"
-                                                    onClick={() => {
-                                                        setDeletionConfirm(true)
-                                                    }}
-                                                >
-                                                    DELETE LOCATION
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    className="bg-red"
-                                                    onClick={() => {
-                                                        setDeletionConfirm(
-                                                            false
-                                                        )
-                                                        DeleteLocation(
-                                                            selectedLocation
-                                                        )
-                                                        setSelectedLocation(
-                                                            null
-                                                        )
-                                                    }}
-                                                >
-                                                    CONFIRM DELETION
-                                                </button>
-                                            )}
-                                        </div>
-                                        <div className="w-3/4 flex justify-between">
-                                            <label>Wattage</label>
-                                            <div className="w-2/5 border-solid border-2 border-gray rounded-lg">
-                                                <input
-                                                    onChange={(e) => {
-                                                        const wattCopy = {
-                                                            ...selectedLocation,
-                                                            ...selectedLocCopy,
-                                                            wattage:
-                                                                selectedLocation.wattage,
-                                                        }
-                                                        wattCopy.wattage =
-                                                            e.target.value
-                                                        setSelectedLocCopy(
-                                                            wattCopy
-                                                        )
-                                                    }}
-                                                    defaultValue={
-                                                        selectedLocation.wattage
-                                                    }
-                                                    className="w-1/2 bg-opacity-0"
-                                                    type="number"
-                                                    min="0"
-                                                    max="99"
-                                                />
-                                                <span className="w-1/2">
-                                                    kWh
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="w-3/4 flex justify-between">
-                                            <label>LAT</label>
-                                            <input
-                                                onChange={(e) => {
-                                                    const latCopy = {
-                                                        ...selectedLocation,
-                                                        ...selectedLocCopy,
-                                                        lat: selectedLocation.lat,
-                                                    }
-                                                    latCopy.lat = e.target.value
-
-                                                    setSelectedLocCopy(latCopy)
-                                                }}
-                                                defaultValue={
-                                                    selectedLocation.lat
-                                                }
-                                                className="w-2/5 border-solid border-2 border-gray rounded-lg px-1"
-                                                type="number"
-                                                min="0"
-                                                max="100"
-                                            />
-                                            <label>LNG</label>
-                                            <input
-                                                onChange={(e) => {
-                                                    const lngCopy = {
-                                                        ...selectedLocation,
-                                                        ...selectedLocCopy,
-                                                        lng: selectedLocation.lng,
-                                                    }
-                                                    lngCopy.lng = e.target.value
-
-                                                    setSelectedLocCopy(lngCopy)
-                                                }}
-                                                defaultValue={
-                                                    selectedLocation.lng
-                                                }
-                                                className="w-2/5 border-solid border-2 border-gray rounded-lg px-1"
-                                                type="number"
-                                                min="0"
-                                                max="100"
-                                            />
-                                        </div>
-
-                                        {selectedLocation.chargingPoint.map(
-                                            (charger, i) => (
-                                                <div className="w-3/4 flex justify-between col-span-full">
-                                                    <label
-                                                        for={`chargerStates${i}`}
-                                                    >{`Charger ${
-                                                        i + 1
-                                                    }`}</label>
-                                                    <select
-                                                        onChange={(e) => {
-                                                            const locCopy = {
-                                                                ...selectedLocation,
-                                                                ...selectedLocCopy,
-                                                                chargingPoint:
-                                                                    selectedLocation.chargingPoint.slice(
-                                                                        0
-                                                                    ),
-                                                            }
-                                                            locCopy.chargingPoint[
-                                                                i
-                                                            ].status =
-                                                                e.target.value
-                                                            locCopy.chargingPoint[
-                                                                i
-                                                            ].updated = true
-
-                                                            setSelectedLocCopy(
-                                                                locCopy
-                                                            )
-                                                        }}
-                                                        defaultValue={
-                                                            charger.status
-                                                        }
-                                                        className="w-2/5 border-solid border-2 border-gray rounded-lg"
-                                                        name={`chargerStates${i}`}
-                                                    >
-                                                        <option value="IDLE">
-                                                            Available
-                                                        </option>
-                                                        <option value="CHARGING">
-                                                            In Use
-                                                        </option>
-                                                        <option value="BROKEN">
-                                                            Broken
-                                                        </option>
-                                                    </select>
-                                                    <button
-                                                        onClick={() => {
-                                                            const locCopy = {
-                                                                ...selectedLocation,
-                                                                ...selectedLocCopy,
-                                                                chargingPoint:
-                                                                    selectedLocation.chargingPoint.slice(
-                                                                        0
-                                                                    ),
-                                                            }
-                                                            DeleteChargePoint(
-                                                                locCopy
-                                                                    .chargingPoint[
-                                                                    i
-                                                                ]
-                                                            )
-                                                        }}
-                                                    >
-                                                        Delete Charger
-                                                    </button>
-                                                </div>
-                                            )
-                                        )}
-                                        <div>
-                                            <button
-                                                className="w-1/2 bg-accent border-solid text-white border rounded hover:border-2 hover: border-black"
-                                                onClick={() => {
-                                                    updateFunction(
-                                                        selectedLocCopy
-                                                    )
-                                                }}
-                                            >
-                                                Update Location Info
-                                            </button>
-                                            <button
-                                                className="w-1/2 bg-accent border-solid text-white border rounded hover:border-2 hover: border-black"
-                                                onClick={() => {
-                                                    //if selectedLocCopy is empty use selectedLocation{
-
-                                                    const newCP = {
-                                                        chargingPointID: -1,
-                                                        locationID:
-                                                            selectedLocation.locationID,
-                                                        status: 'IDLE',
-                                                    }
-
-                                                    const addCopy = {
-                                                        ...selectedLocation,
-                                                        ...selectedLocCopy,
-                                                    }
-                                                    addCopy.chargingPoint.push(
-                                                        newCP
-                                                    )
-                                                    updateFunction(addCopy)
-                                                    setUpdated(false)
-                                                }}
-                                            >
-                                                Add Charger
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <ManageLocation
+                                        DeleteLocation={DeleteLocation}
+                                        deletionConfirm={deletionConfirm}
+                                        selectedLocation={selectedLocation}
+                                        setDeletionConfirm={setDeletionConfirm}
+                                        setSelectedLocCopy={setSelectedLocCopy}
+                                        setSelectedLocation={
+                                            setSelectedLocation
+                                        }
+                                        setUpdated={setUpdated}
+                                        updateFunction={updateFunction}
+                                        selectedLocCopy={selectedLocCopy}
+                                    />
                                 )}
                                 {adding ? (
-                                    <div>
-                                        <h1 className="w-full text-center text-xl font-bold">
-                                            Add Charger Here
-                                        </h1>
-                                        <label
-                                            class="block text-black text-m font-bold m-3"
-                                            for="name"
-                                        >
-                                            Name Of Location
-                                        </label>
-                                        <input
-                                            className="w-3/4 border border-solid p-0 m-3 flex justify-between"
-                                            id="name"
-                                        ></input>
-                                        <label
-                                            class="block text-black text-m font-bold m-3"
-                                            for="wattage"
-                                        >
-                                            Wattage
-                                        </label>
-                                        <input
-                                            className="w-3/4 border border-solid p-0 m-3"
-                                            id="wattage"
-                                        ></input>
-                                        <label
-                                            class="block text-black text-m font-bold m-3"
-                                            for="latitude"
-                                        >
-                                            Latitude
-                                        </label>
-                                        <input
-                                            className="w-3/4 border border-solid p-0 m-3"
-                                            id="latitude"
-                                        ></input>
-                                        <label
-                                            class="block text-black text-m font-bold m-3"
-                                            for="longitude"
-                                        >
-                                            Longitude
-                                        </label>
-                                        <input
-                                            className="w-3/4 border border-solid p-0 m-3"
-                                            id="longitude"
-                                        ></input>
-                                        <label
-                                            class="block text-black text-m font-bold m-3"
-                                            for="noChargers"
-                                        >
-                                            Number Of Chargers
-                                        </label>
-                                        <input
-                                            className="w-3/4 border border-solid p-0 m-3"
-                                            id="noChargers"
-                                        ></input>
-                                        <button
-                                            className="w-full hover: border-black bg-accent py-2 text-white text-bold rounded-l rounded-r align-right"
-                                            onClick={() => {
-                                                setAdding(false)
-
-                                                AddLocation(
-                                                    document.getElementById(
-                                                        'name'
-                                                    ).value,
-                                                    document.getElementById(
-                                                        'wattage'
-                                                    ).value,
-                                                    document.getElementById(
-                                                        'latitude'
-                                                    ).value,
-                                                    document.getElementById(
-                                                        'longitude'
-                                                    ).value,
-                                                    document.getElementById(
-                                                        'noChargers'
-                                                    ).value
-                                                )
-                                                setUpdated(false)
-                                            }}
-                                        >
-                                            Add New Location
-                                        </button>
-                                    </div>
+                                    <AddLocationMenu
+                                        AddLocation={AddLocation}
+                                        setAdding={setAdding}
+                                        setUpdated={setUpdated}
+                                    />
                                 ) : null}
                             </div>
                         </Card>
@@ -403,16 +124,26 @@ export default function Admin() {
 }
 
 async function updateFunction(location) {
-    if (location) {
-        const response = await Axios.patch(
-            'http://localhost:3000/api/admin/update-location',
-            location,
-            {}
-        )
-    } else {
-        console.log('No changes made')
+    try {
+        if (location) {
+            const response = await Axios.patch(
+                'http://localhost:3000/api/admin/update-location',
+                location,
+                {
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': '1',
+                    },
+                }
+            )
+            window.location.reload()
+        } else {
+            console.log('No changes made')
+        }
+    } catch (err) {
+        return
     }
-    return
 }
 
 async function DeleteChargePoint(body) {
@@ -431,17 +162,28 @@ async function DeleteLocation(body) {
 }
 
 async function AddLocation(name, wattage, lat, lng, noChargers) {
-    const body = {
-        name,
-        wattage,
-        lat,
-        lng,
-        noChargers,
-        chargingPoint: [],
+    try {
+        const body = {
+            name,
+            wattage,
+            lat,
+            lng,
+            noChargers,
+            chargingPoint: [],
+        }
+        const response = await Axios.patch(
+            'http://localhost:3000/api/admin/update-location',
+            body,
+            {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': '1',
+                },
+            }
+        )
+        window.location.reload()
+    } catch (err) {
+        return
     }
-    const response = await Axios.patch(
-        'http://localhost:3000/api/admin/update-location',
-        body,
-        {}
-    )
 }
