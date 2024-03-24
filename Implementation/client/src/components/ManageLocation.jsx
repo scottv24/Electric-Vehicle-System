@@ -8,6 +8,7 @@ export default function ManageLocation({
     updateFunction,
     setUpdated,
     selectedLocCopy,
+    DeleteChargePoint,
 }) {
     return (
         <div className="col-span-full xl:px-[10%] text-xl p-3 flex flex-col justify-between h-full ">
@@ -29,7 +30,7 @@ export default function ManageLocation({
                     </button>
                 ) : (
                     <button
-                        className="bg-red"
+                        className="bg-red text-white p-2 rounded-md"
                         onClick={() => {
                             setDeletionConfirm(false)
                             DeleteLocation(selectedLocation)
@@ -84,20 +85,22 @@ export default function ManageLocation({
                 <label>LNG</label>
                 <input
                     onChange={(e) => {
+                        console.log('here')
                         const lngCopy = {
                             ...selectedLocation,
                             ...selectedLocCopy,
                             lng: selectedLocation.lng,
                         }
+                        console.log(lngCopy)
                         lngCopy.lng = e.target.value
-
+                        console.log(lngCopy)
                         setSelectedLocCopy(lngCopy)
                     }}
                     defaultValue={selectedLocation.lng}
                     className="w-2/5 border-solid border-2 border-gray rounded-lg px-1"
                     type="number"
-                    min="0"
-                    max="100"
+                    min="-5"
+                    max="0"
                 />
             </div>
             {selectedLocation.chargingPoint.map((charger, i) => (
@@ -146,6 +149,7 @@ export default function ManageLocation({
                 <button
                     className="w-1/2 bg-accent border-solid text-white border-2 border-white hover:border-black p-2 rounded-md"
                     onClick={() => {
+                        console.log(selectedLocCopy)
                         updateFunction(selectedLocCopy)
                     }}
                 >

@@ -10,7 +10,7 @@ export default function Profile() {
     const [deletingAccount, setDeleteAccount] = useState(false)
     return (
         <div className="w-full flex">
-            <Navbar active={'Queues'} type="client" />
+            <Navbar active={'Profile'} type="client" />
             <MainBody>
                 <h1 className="font-bold text-3xl p-2 w-full">Profile</h1>
                 <div className="h-2/3 flex flex-col items-center justify-center">
