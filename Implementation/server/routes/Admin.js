@@ -325,7 +325,7 @@ router.post('/update-charging-point', async function (req, res) {
     }
 })
 
-router.delete('/delete-location', async function (req, res) {
+router.patch('/delete-location', async function (req, res) {
     try {
         locationID = req.body.locationID
 
@@ -357,6 +357,7 @@ router.delete('/delete-location', async function (req, res) {
 
             res.sendStatus(200)
         } else {
+            console.log('here')
             res.sendStatus(400)
         }
     } catch (err) {
@@ -368,7 +369,7 @@ router.delete('/delete-location', async function (req, res) {
     }
 })
 
-router.delete('/delete-charging-point', async function (req, res) {
+router.patch('/delete-charging-point', async function (req, res) {
     try {
         chargingPointID = req.body.chargingPointID
 

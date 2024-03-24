@@ -105,6 +105,7 @@ export default function Admin() {
                                         setUpdated={setUpdated}
                                         updateFunction={updateFunction}
                                         selectedLocCopy={selectedLocCopy}
+                                        DeleteChargePoint={DeleteChargePoint}
                                     />
                                 )}
                                 {adding ? (
@@ -147,18 +148,35 @@ async function updateFunction(location) {
 }
 
 async function DeleteChargePoint(body) {
-    const response = await Axios.delete(
+    const { chargingPointID } = body
+    const response = await Axios.patch(
         'http://localhost:3000/api/admin/delete-charging-point',
-        { data: body }
+        { chargingPointID },
+        {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': '1',
+            },
+        }
     )
+    window.location.reload()
 }
 
 async function DeleteLocation(body) {
-    //TODO havent tested but i assume this works
-    const response = await Axios.delete(
+    const { locationID } = body
+    const response = await Axios.patch(
         'http://localhost:3000/api/admin/delete-location',
-        { data: body }
+        { locationID },
+        {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': '1',
+            },
+        }
     )
+    window.location.reload()
 }
 
 async function AddLocation(name, wattage, lat, lng, noChargers) {

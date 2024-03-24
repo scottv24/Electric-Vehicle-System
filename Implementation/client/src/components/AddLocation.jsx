@@ -15,7 +15,7 @@ export default function AddLocationMenu({
                     Name Of Location
                 </label>
                 <input
-                    className="w-3/4 border border-solid p-0 m-3 flex justify-between"
+                    className="w-3/4 border border-solid m-3 flex justify-between rounded-md p-2"
                     id="name"
                 ></input>
                 <label
@@ -25,7 +25,7 @@ export default function AddLocationMenu({
                     Wattage
                 </label>
                 <input
-                    className="w-3/4 border border-solid p-0 m-3"
+                    className="w-3/4 border border-solid  m-3 rounded-md p-2"
                     id="wattage"
                 ></input>
                 <label
@@ -35,7 +35,7 @@ export default function AddLocationMenu({
                     Latitude
                 </label>
                 <input
-                    className="w-3/4 border border-solid p-0 m-3"
+                    className="w-3/4 border border-solid rounded-md p-2 m-3"
                     id="latitude"
                 ></input>
                 <label
@@ -45,7 +45,7 @@ export default function AddLocationMenu({
                     Longitude
                 </label>
                 <input
-                    className="w-3/4 border border-solid p-0 m-3"
+                    className="w-3/4 border border-solid rounded-md p-2 m-3"
                     id="longitude"
                 ></input>
                 <label
@@ -55,7 +55,7 @@ export default function AddLocationMenu({
                     Number Of Chargers
                 </label>
                 <input
-                    className="w-3/4 border border-solid p-0 m-3"
+                    className="w-3/4 border border-solid rounded-md p-2 m-3"
                     id="noChargers"
                 ></input>
                 <button

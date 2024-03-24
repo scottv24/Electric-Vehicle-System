@@ -9,7 +9,7 @@ export default function LocationMarker({ location, setLocation }) {
     const availableCount = location.availability.available
     const allBroken =
         location.availability.numChargers === location.availability.broken
-    if (availableCount > 1) {
+    if (availableCount > 0) {
         icon = available
     } else if (allBroken) {
         icon = broken
