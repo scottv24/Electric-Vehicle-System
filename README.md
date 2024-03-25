@@ -1,7 +1,7 @@
 # Electric Vehicle System 
 This is the repository for the Heriot-Watt electric vehicle charging queue system.
 
-The "main" branch contains the system in the default, development configuration
+The "main" branch contains the system in the default, development configuration.
 
 For the production configuration, please see the "prod" branch.
 
