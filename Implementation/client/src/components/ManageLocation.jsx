@@ -1,3 +1,8 @@
+import { useState } from 'react'
+import Button from './Button'
+import Modal from './Modal'
+import QRCode from 'react-qr-code'
+
 export default function ManageLocation({
     selectedLocation,
     deletionConfirm,
@@ -10,6 +15,7 @@ export default function ManageLocation({
     selectedLocCopy,
     DeleteChargePoint,
 }) {
+    const [QRModal, setQRModal] = useState(false)
     return (
         <div className="col-span-full xl:px-[10%] text-xl p-3 flex flex-col justify-between h-full ">
             <div className="flex justify-between">
@@ -178,6 +184,27 @@ export default function ManageLocation({
                     Add Charger
                 </button>
             </div>
+
+            <Button
+                color="WHITE"
+                className="mx-auto"
+                onClick={() => setQRModal(true)}
+            >
+                Get QR Code
+            </Button>
+            {QRModal && (
+                <Modal setOpen={setQRModal}>
+                    <div className="p-2 flex justify-center flex-col items-center">
+                        <p className="p-4 text-xl">
+                            QR code for {selectedLocation.name}
+                        </p>
+                        <QRCode
+                            value={`https://www.macs.hw.ac.uk/hwcharging/charger/${selectedLocation.locationID}`}
+                            fgColor="#002602"
+                        />
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }
