@@ -23,7 +23,7 @@ export default function Reports() {
 
     return (
         <div className="w-full flex">
-            <Navbar active={'Dashboard'} type="admin" />
+            <Navbar active={'Reports'} type="admin" />
             <MainBody>
                 <h1 className="font-bold text-3xl p-2">Reports</h1>
                 <Card className="min-h-[400px] p-8 grid grid-cols-1 sm:w-full w-full sm:h-auto h-full  text-left content-start">

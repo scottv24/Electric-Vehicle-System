@@ -44,13 +44,7 @@ export default function Admin() {
                     //TODO: Fix scrolling so only table scrolls
                     chargeLocations && (
                         <Card className="min-h-[400px] sm:w-full w-full sm:h-full sm:h-auto overflow-auto">
-                            <div className="w-full h-1/6 flex justify-stretch">
-                                <button className="w-1/2">Table View</button>
-                                <button className="w-1/2 bg-bg2 text-lg hover:bg-white hover:border-2 hover: border-black">
-                                    Map View
-                                </button>
-                            </div>
-                            <div className="p-4  grid-cols-4 h-full">
+                            <div className="p-4 pt-16 grid-cols-4 h-full">
                                 <div className="flex">
                                     <h1 className="w-full col-span-3 mt-0 text-3xl font-bold flex justify-left items-center">
                                         Charging Locations

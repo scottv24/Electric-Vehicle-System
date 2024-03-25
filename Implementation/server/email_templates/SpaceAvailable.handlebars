@@ -32,16 +32,27 @@
             <tr>
                 <td>
                     <!-- Logo -->
-                    <img class="logo" src="cid:logo" alt="Logo">
+                    <img class="logo" src="cid:greenLogo" alt="Logo">
                 </td>
             </tr>
             <tr>
                 <td>
                     <!-- Email Contents -->
                     <h1 class="text"> <b>{{title}}</b> </h1>
-                    <p class="text"> Hello <b>{{user}}</b>, Good News! </p>
-                    <p class="text"> A space is now available at <b>{{zone}}</b> </p>
+                    <p class="text"> Hello, Good News! </p>
+                    <p class="text"> A space is now available at <b>{{location}}</b> </p>
                     <p class="text"> Please make your way there and report your car as charging when safe to do so. </p>
+                    <p class="text"> Your space is reserved for the next 30 minutes. </p>
+                    <table border="0" cellspacing="0" cellpadding="0" align="center" style="margin-top:5%">
+                        <tr>
+                            <td style="padding: 12px 18px 12px 18px; border-radius:5px; background-color: #047508;" align="center">
+                                <a rel="noopener" target="_blank" href={{checkIn}} target="_blank" style="font-size: 18px; font-family: Helvetica, Arial, sans-serif; font-weight: bold; color: #ffffff; text-decoration: none; display: inline-block;">Check in &rarr;</a>
+                            </td>
+                            <td style="padding: 12px 18px 12px 18px; border-radius:5px; background-color: #047508;" align="center">
+                                <a rel="noopener" target="_blank" href={{directions}} target="_blank" style="font-size: 18px; font-family: Helvetica, Arial, sans-serif; font-weight: bold; color: #ffffff; text-decoration: none; display: inline-block;">Directions &rarr;</a>
+                            </td>
+                        </tr>
+                    </table>       
                     </p>              
                 </td>
             </tr>
@@ -55,7 +66,7 @@
             <tr>
                 <td>
                     <!-- Your inverted logo is here -->
-                    <img class="logo" alt="Logo" src="cid:logo" align="center">
+                    <img class="logo" alt="Logo" src="cid:whiteLogo" align="center">
 
                     <p class="text">
                         <i>MengDevChargers@Gmail.com</i>
