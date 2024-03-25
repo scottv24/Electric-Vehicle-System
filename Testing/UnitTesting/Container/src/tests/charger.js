@@ -23,18 +23,18 @@ async function TestUpdateCharger(){
     ]))
 
     allResults.outputText+= "<br><b>Test reporting a charger as in use, which should automatically update it's status: </b>"
-    await tryRequest (async() => updateCharger(1, 1, "CHARGING", "This charger is already in use!"), allResults, async () => await CompoundAssertion([
+    await tryRequest (async() => updateCharger(1, 2, "CHARGING", ""), allResults, async () => await CompoundAssertion([
         async () => await AssertReportData(8, [{
             reportID: 1,
             chargingPointID: 1,
             message: "It is not charging my car!",
-        },
-        async () => await AssertChargerData(1, {
-            chargingPointID: 1,
+        }]),
+        async () => await AssertChargerData(2, {
+            chargingPointID: 2,
             locationID: 1,
-            status: "BROKEN",
+            status: "CHARGING",
         })
-    ])]))
+    ]))
 
     return allResults
 }
