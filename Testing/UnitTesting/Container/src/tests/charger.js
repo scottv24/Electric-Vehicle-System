@@ -112,7 +112,7 @@ async function TestGettingReportCount(){
 
 async function TestValidatingReport(){
 
-    allResults = {name: "Test deleting a report", outputText: "", successCount: 0, failureCount: 0}
+    allResults = {name: "Test validating a report", outputText: "", successCount: 0, failureCount: 0}
 
     allResults.outputText+= "<br><b>Test reporting a charger as broken, which should log a report: </b>"
     await tryRequest (async() => updateCharger(1, 1, "BROKEN", "It is not charging my car!"), allResults, async () => await CompoundAssertion ([
