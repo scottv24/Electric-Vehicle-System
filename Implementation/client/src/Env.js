@@ -1,7 +1,7 @@
 /*   ⌄⌄⌄ CHANGE WHEN ENV PUTTING INTO PROD  ⌄⌄⌄    */
 
-//const env = "PROD"
-const env = 'DEV'
+const env = 'PROD'
+//const env = 'DEV'
 
 /*   ^^^ CHANGE WHEN ENV PUTTING INTO PROD ^^^     */
 
