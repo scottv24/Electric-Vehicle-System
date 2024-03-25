@@ -12,6 +12,7 @@ import AdminTable from '../components/AdminTable'
 import Axios from 'axios'
 import ManageLocation from '../components/ManageLocation'
 import AddLocationMenu from '../components/AddLocation'
+import { backendURL } from '../Env'
 
 export default function Admin() {
     const [chargeLocations, setChargeLocations] = useState(null)
@@ -128,7 +129,7 @@ async function updateFunction(location) {
     try {
         if (location) {
             const response = await Axios.patch(
-                'http://localhost:3000/api/admin/update-location',
+                `${backendURL}/api/admin/update-location`,
                 location,
                 {
                     withCredentials: true,
@@ -150,7 +151,7 @@ async function updateFunction(location) {
 async function DeleteChargePoint(body) {
     const { chargingPointID } = body
     const response = await Axios.patch(
-        'http://localhost:3000/api/admin/delete-charging-point',
+        `${backendURL}/api/admin/delete-charging-point`,
         { chargingPointID },
         {
             withCredentials: true,
@@ -166,7 +167,7 @@ async function DeleteChargePoint(body) {
 async function DeleteLocation(body) {
     const { locationID } = body
     const response = await Axios.patch(
-        'http://localhost:3000/api/admin/delete-location',
+        `${backendURL}/api/admin/delete-location`,
         { locationID },
         {
             withCredentials: true,
@@ -190,7 +191,7 @@ async function AddLocation(name, wattage, lat, lng, noChargers) {
             chargingPoint: [],
         }
         const response = await Axios.patch(
-            'http://localhost:3000/api/admin/update-location',
+            `${backendURL}/api/admin/update-location`,
             body,
             {
                 withCredentials: true,

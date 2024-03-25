@@ -7,6 +7,8 @@ import AdminTable from '../components/AdminTable'
 import { useState, useEffect } from 'react'
 import AdminTableUsers from '../components/AdminTableUsers'
 import Axios from 'axios'
+import { backendURL } from '../Env'
+
 export default function AdminConsole() {
     const [accounts, setAccount] = useState(null)
     const [selectedAccount, setSelectedAccount] = useState(null)
@@ -132,7 +134,7 @@ async function RemoveAdmin(email) {
     const permissionLevel = 'USER'
     const body = { email, permissionLevel }
     const response = await Axios.patch(
-        'http://localhost:3000/api/admin/set-permission-level',
+        `${backendURL}/api/admin/set-permission-level`,
         body,
         {}
     )
@@ -142,7 +144,7 @@ async function AddAdmin(email) {
     const permissionLevel = 'ADMIN'
     const body = { email, permissionLevel }
     const response = await Axios.patch(
-        'http://localhost:3000/api/admin/set-permission-level',
+        `${backendURL}/api/admin/set-permission-level`,
         body,
         {}
     )
