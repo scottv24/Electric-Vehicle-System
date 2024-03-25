@@ -8,8 +8,9 @@ import Reports from './pages/Reports'
 import Queues from './pages/Queues'
 import ChargerLocationFlow from './components/ChargerLocationFlow'
 import Map from './components/Map'
-import { rootURL } from './Env'
+import { frontendURL, rootURL } from './Env'
 import Profile from './pages/Profile'
+import Modal from './components/Modal'
 
 export default function App() {
     return (
@@ -62,13 +63,21 @@ export default function App() {
                 <Route
                     path="/charger/:id"
                     element={
-                        <ChargerLocationFlow
+                        <Modal
                             setOpen={(open) => {
                                 if (!open) {
-                                    window.location.replace(rootURL)
+                                    window.location.replace(frontendURL)
                                 }
                             }}
-                        />
+                        >
+                            <ChargerLocationFlow
+                                setOpen={(open) => {
+                                    if (!open) {
+                                        window.location.replace(rootURL)
+                                    }
+                                }}
+                            />
+                        </Modal>
                     }
                 />
                 <Route
