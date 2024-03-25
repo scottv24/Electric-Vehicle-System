@@ -2,7 +2,8 @@ const axios = require('axios')
 const { GetJWT } = require('./authentication')
 
 module.exports = { testRequest, verifyUser, getUserData, getLocationData, getAllChargerData, getChargerData, getQueueData, joinQueue, leaveQueue, checkIn, checkOut, cancelReservation,
-    setPermissionLevel, getAdminUsers, clearQueue, updateLocation, updateChargingPoint, deleteLocation, deleteChargingPoint }
+    setPermissionLevel, getAdminUsers, clearQueue, updateLocation, updateChargingPoint, deleteLocation, deleteChargingPoint, updateCharger, getReports, removeReport, getReportCount, 
+    validateReport }
 
 var testEndpoint = process.env.TEST_ENDPOINT;
 
@@ -442,6 +443,119 @@ async function deleteChargingPoint(adminUserID, chargingPointID, successStatus =
 
     } catch (err) {
         console.log("Error deleting charging point " + chargingPointID + "\n")
+        console.log(err)
+
+        return {status: "ERROR", errorMessage: err}
+    }
+}
+
+async function updateCharger(userID, chargingPointID, status, message, successStatus = (httpStatus) => httpStatus >= 200 && httpStatus < 400){
+    try {
+        const res = await axios.patch(
+            `${testEndpoint}/api/chargers/update-charger`,
+            {chargingPointID, status, message},
+            {
+                headers: {
+                    Cookie: `token=${GetJWT(userID)}`
+                },
+                validateStatus: (httpStatus) => successStatus(httpStatus)
+            }
+        )
+
+        return {status: "SUCCESS", data: res.data, httpStatus: res.status}
+
+    } catch (err) {
+        console.log("Error updating charging point " + chargingPointID + "\n")
+        console.log(err)
+
+        return {status: "ERROR", errorMessage: err}
+    }
+}
+
+async function getReports(adminUserID, successStatus = (httpStatus) => httpStatus >= 200 && httpStatus < 400){
+    try {
+        const res = await axios.get(
+            `${testEndpoint}/api/admin/report`,
+            {
+                headers: {
+                    Cookie: `token=${GetJWT(adminUserID)}`
+                },
+                validateStatus: (httpStatus) => successStatus(httpStatus)
+            }
+        )
+
+        return {status: "SUCCESS", data: res.data, httpStatus: res.status}
+
+    } catch (err) {
+        console.log("Error updating charging point " + chargingPointID + "\n")
+        console.log(err)
+
+        return {status: "ERROR", errorMessage: err}
+    }
+}
+
+async function removeReport(adminUserID, reportID, successStatus = (httpStatus) => httpStatus >= 200 && httpStatus < 400){
+    try {
+        const res = await axios.patch(
+            `${testEndpoint}/api/admin/remove-report`,
+            {reportID},
+            {
+                headers: {
+                    Cookie: `token=${GetJWT(adminUserID)}`
+                },
+                validateStatus: (httpStatus) => successStatus(httpStatus)
+            }
+        )
+
+        return {status: "SUCCESS", data: res.data, httpStatus: res.status}
+
+    } catch (err) {
+        console.log("Error removing report " + reportID + "\n")
+        console.log(err)
+
+        return {status: "ERROR", errorMessage: err}
+    }
+}
+
+async function getReportCount(adminUserID, successStatus = (httpStatus) => httpStatus >= 200 && httpStatus < 400){
+    try {
+        const res = await axios.get(
+            `${testEndpoint}/api/admin/report-count`,
+            {
+                headers: {
+                    Cookie: `token=${GetJWT(adminUserID)}`
+                },
+                validateStatus: (httpStatus) => successStatus(httpStatus)
+            }
+        )
+
+        return {status: "SUCCESS", data: res.data, httpStatus: res.status}
+
+    } catch (err) {
+        console.log("Error getting report count\n")
+        console.log(err)
+
+        return {status: "ERROR", errorMessage: err}
+    }
+}
+
+async function validateReport(adminUserID, chargingPointID, successStatus = (httpStatus) => httpStatus >= 200 && httpStatus < 400){
+    try {
+        const res = await axios.patch(
+            `${testEndpoint}/api/admin/validate-broken`,
+            {chargingPointID},
+            {
+                headers: {
+                    Cookie: `token=${GetJWT(adminUserID)}`
+                },
+                validateStatus: (httpStatus) => successStatus(httpStatus)
+            }
+        )
+
+        return {status: "SUCCESS", data: res.data, httpStatus: res.status}
+
+    } catch (err) {
+        console.log("Error validating report for charger " + chargingPointID + "\n")
         console.log(err)
 
         return {status: "ERROR", errorMessage: err}

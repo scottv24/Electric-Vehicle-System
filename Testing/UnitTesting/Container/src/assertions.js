@@ -1,6 +1,6 @@
-const { getUserData, getLocationData, getAllChargerData, getChargerData, getQueueData, getAdminUsers } = require('./requests')
+const { getUserData, getLocationData, getAllChargerData, getChargerData, getQueueData, getAdminUsers, getReports, getReportCount } = require('./requests')
 
-module.exports = { AssertHTTPResponse, AssertUserData, AssertLocationData, AssertChargerData, AssertQueueData, AssertAdminUserData,
+module.exports = { AssertHTTPResponse, AssertUserData, AssertLocationData, AssertChargerData, AssertQueueData, AssertAdminUserData, AssertReportData, AssertReportCount,
     AssertUserChargerData, CompoundAssertion, AssertUserChargerQueueData }
 
 function EvaluateExpectedResults(actual, expected)
@@ -287,6 +287,91 @@ async function AssertAdminUserData(adminUserID, expected){
 
     } catch (err) {
         console.log("Failure in AssertAdminUserData due to error\n")
+        console.log(err)
+
+        outputText+= "Failure due to error<br>" + err + "<br>"
+    }
+
+    return {passed, outputText, res: [res]}
+}
+
+async function AssertReportData(adminUserID, expected){
+    let outputText = "<b>Assert report data: </b>"
+
+    let passed = false
+
+    let res
+
+    try {
+        res = await getReports(adminUserID)
+
+        expected = expected.sort((a, b) => a.locationID > b.locationID)
+        res.data.report = res.data.report.sort((a, b) => a.locationID > b.locationID)
+
+        if(res.status == "SUCCESS" && expected.length == res.data.report.length && 
+        (expected.length == 0 || expected.map((exp, i) => EvaluateExpectedResults(res.data.report[i], exp)).reduce((allTrue, current) => allTrue && current, true)))
+        {
+            passed = true
+
+            outputText+= "Success"
+        }
+        else
+        {
+            outputText+= "Failure"
+        }
+
+        const formattedReports = res.data.report.map((report, i) => i < expected.length ? SelectObjectFields(expected[i], report) : report)
+
+        const expectedString = expected.length == 0 ? "Empty" : JSON.stringify(expected)
+        const actualString = formattedReports.length == 0 ? "Empty" : JSON.stringify(formattedReports)
+
+        outputText+= "<br>Expected report data: " + expectedString + "<br>Actual report data: " + actualString + "<br>"
+
+        if(res.status == "ERROR")
+        {
+            outputText+= res.errorMessage + "<br>"
+        }
+
+    } catch (err) {
+        console.log("Failure in AssertReportData due to error\n")
+        console.log(err)
+
+        outputText+= "Failure due to error<br>" + err + "<br>"
+    }
+
+    return {passed, outputText, res: [res]}
+}
+
+async function AssertReportCount(adminUserID, expected){
+    let outputText = "<b>Assert report count: </b>"
+
+    let passed = false
+
+    let res
+
+    try {
+        res = await getReportCount(adminUserID)
+
+        if(res.status == "SUCCESS" && expected == res.data.count)
+        {
+            passed = true
+
+            outputText+= "Success"
+        }
+        else
+        {
+            outputText+= "Failure"
+        }
+
+        outputText+= "<br>Expected report count: " + expected + "<br>Actual report count: " + res.data.count + "<br>"
+
+        if(res.status == "ERROR")
+        {
+            outputText+= res.errorMessage + "<br>"
+        }
+
+    } catch (err) {
+        console.log("Failure in AssertReportCount due to error\n")
         console.log(err)
 
         outputText+= "Failure due to error<br>" + err + "<br>"
