@@ -9,14 +9,13 @@ export default function LeaveQueueModal({ locations, setOpen, refresh }) {
             e.stopPropagation()
         }
     }
-
     const exit = () => {
         setOpen(false)
     }
     return (
         <Modal setOpen={setOpen}>
             <div className="flex flex-col justify-evenly h-full">
-                {locations.length === 1 ? (
+                {locations.length === 1 && locations[0].position ? (
                     <div>
                         <h1 className="text-xl font-bold">
                             Are you sure you want to leave the queue?

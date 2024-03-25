@@ -108,6 +108,7 @@ export default function Queues() {
                                                                 queue.locationID,
                                                         })
                                                 )
+
                                                 setSelectedQueues(allQueues)
                                             }}
                                         >
