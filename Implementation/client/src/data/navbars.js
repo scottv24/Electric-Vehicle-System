@@ -3,8 +3,8 @@ import {
     faStopwatch,
     faUser,
     faUserGear,
-    faChartLine,
     faArrowLeft,
+    faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons'
 
 export const NavbarInfo = {
@@ -14,7 +14,7 @@ export const NavbarInfo = {
             path: 'Admin',
             icon: faChargingStation,
         },
-        { name: 'Reports', path: 'reports', icon: faChartLine },
+        { name: 'Reports', path: 'reports', icon: faTriangleExclamation },
         {
             name: 'Admin Console',
             path: 'adminConsole',

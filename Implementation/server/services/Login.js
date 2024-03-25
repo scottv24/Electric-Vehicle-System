@@ -1,4 +1,3 @@
-
 const { getPrismaClient } = require('../index')
 
 const prisma = getPrismaClient()
@@ -62,12 +61,24 @@ async function Login(req, res) {
                 const emailOptions = {
                     from: 'mengdevcharger@gmail.com',
                     to: user.email, //test email here
-                    subject: 'loginEmail',
+                    subject: 'Charge Checker - Complete Login',
                     template: 'loginEmail',
                     context: {
                         user: user.email,
                         link: `${process.env.HOST_NAME}/api/verify-user?token=${token}${redirect}`,
                     },
+                    attachments: [
+                        {
+                            filename: 'GreenEmailLogo.png',
+                            path: 'email_templates/GreenEmailLogo.png',
+                            cid: 'greenLogo',
+                        },
+                        {
+                            filename: 'WhiteEmailLogo.png',
+                            path: 'email_templates/WhiteEmailLogo.png',
+                            cid: 'whiteLogo',
+                        },
+                    ],
                 }
                 console.log('Sending email...')
                 emailTransport.sendMail(emailOptions, (err, res) => {

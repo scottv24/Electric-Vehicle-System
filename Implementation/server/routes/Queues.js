@@ -4,6 +4,7 @@ const Prisma = require('@prisma/client')
 const { getUserID } = require('../services/Login')
 
 const { getPrismaClient } = require('../index')
+const SendAvailableEmail = require('../services/AvailableEmail')
 
 const prisma = getPrismaClient()
 
@@ -188,29 +189,26 @@ async function leaveQueue(req, res) {
 
     await prisma.queue.deleteMany({
         where: {
-            AND:[
-                { userID },
-                { locationID: { in: locationsList }},
-            ]
+            AND: [{ userID }, { locationID: { in: locationsList } }],
         },
     })
 
     //If the user has left all queues, set their status to idle
     const queues = await prisma.queue.findMany({
         where: {
-            userID
-        }
+            userID,
+        },
     })
 
-    if(queues.length == 0)
-    {
+    if (queues.length == 0) {
         await prisma.users.update({
             where: {
                 id: userID,
             },
             data: {
-                status: "IDLE",
-            }})
+                status: 'IDLE',
+            },
+        })
     }
 
     return res.send('Complete')
@@ -292,13 +290,21 @@ async function freeChargingPoint(chargingPointID, res) {
 
         if (nextInQueue.length) {
             await prisma.users.update({
-                where: { id: nextInQueue[0].userID },
+                where: {
+                    id: nextInQueue[0].userID,
+                    NOT: { status: 'PENDING' },
+                },
                 data: {
                     status: 'PENDING',
                     pendingStartTime: new Date(),
                     chargePointID: chargingPointID,
                 },
             })
+            const { location } = await prisma.chargingPoint.findFirst({
+                where: { chargingPointID },
+                include: { location: true },
+            })
+            SendAvailableEmail(nextInQueue[0].userID, location)
 
             await prisma.chargingPoint.update({
                 where: { chargingPointID: chargingPointID },
