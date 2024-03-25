@@ -29,7 +29,6 @@ services:
     environment:
       - HOST_PORT=8286
       - HOST_NAME=https://www.macs.hw.ac.uk/hwcharging
-      - PRODUCTION=TRUE
       - MODE=PROD
     secrets:
       - db-url
