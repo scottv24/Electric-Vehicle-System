@@ -285,14 +285,14 @@ async function freeChargingPoint(chargingPointID, res) {
         SELECT * FROM queue 
         INNER JOIN users 
         ON queue.userID = users.id 
-        WHERE users.status = 'WAITING'
+        WHERE users.status = 'WAITING' AND queue.locationID = ${chargingPoint.locationID}
         ORDER BY queue.queueEntryTime ASC`
 
         if (nextInQueue.length) {
+            console.log(nextInQueue[0].userID)
             await prisma.users.update({
                 where: {
                     id: nextInQueue[0].userID,
-                    NOT: { status: 'PENDING' },
                 },
                 data: {
                     status: 'PENDING',
@@ -329,6 +329,7 @@ async function cancelReservation(req, res) {
         const user = await prisma.users.findFirst({
             where: { id },
         })
+        console.log(user)
         await prisma.users.update({
             where: { id },
             data: { chargePointID: null, status: 'WAITING' },
